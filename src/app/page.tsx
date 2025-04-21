@@ -17,6 +17,57 @@ export default function Home() {
           </div>
         </nav>
       </header>
+
+      <div className="max-w-screen-xl mt-24 px-8 xl:px-16 mx-auto">
+        <div className="grid grid-flow-row sm:grid-flow-col grid-rows-2 md:grid-rows-1 sm:grid-cols-2 gap-8 py-6 sm:py-16">
+          <div className=" flex flex-col justify-center items-start row-start-2 sm:row-start-1">
+            <h1 className="text-2xl lg:text-3xl xl:text-4xl text-black leading-normal font-bold ">
+              紫菜检测系统
+            </h1>
+            <p className="text-gray-700 mt-4 mb-6">
+              Provide a network for all your needs with ease and fun using
+              LaslesVPN discover interesting features from us.
+            </p>
+            <button
+              className="py-3 lg:py-4 px-12 lg:px-16 text-white-500 font-semibold rounded-lg bg-orange-500 hover:shadow-orange-md transition-all outline-none">
+              进入系统
+            </button>
+          </div>
+          <div className="flex w-full">
+              <Image
+                src="/assets/Illustration1.png"
+                alt="VPN Illustrasi"
+                quality={100}
+                width={612}
+                height={383}
+                layout="responsive"
+              />
+          </div>
+        </div>
+
+        
+
+        {/* <div className="relative w-full flex">
+
+            {listUser.map((listUsers, index) => (
+              <div className="flex mx-auto w-40 sm:w-auto">
+                <div className="flex items-center justify-center bg-orange-100 w-12 h-12 mr-6 rounded-full">
+                  <img src={listUsers.icon} className="h-6 w-6" />
+                </div>
+                <div className="flex flex-col">
+                  <p className="text-xl text-black-600 font-bold">
+                    {listUsers.number}+
+                  </p>
+                  <p className="text-lg text-black-500">{listUsers.name}</p>
+                </div>
+              </div>
+            ))}
+          <div
+              className="absolute bg-black-600 opacity-5 w-11/12 roudned-lg h-64 sm:h-48 top-0 mt-8 mx-auto left-0 right-0"
+              style={{ filter: "blur(114px)" }}
+          ></div>
+        </div> */}
+      </div>
     </>
   );
 }
