@@ -1,5 +1,7 @@
+"use client"
 import Image from "next/image";
 import {FaFlask} from "react-icons/fa6";
+import { Button } from "@/components/ui/button";
 
 export default function Home() {
   return (
@@ -28,14 +30,14 @@ export default function Home() {
               Provide a network for all your needs with ease and fun using
               LaslesVPN discover interesting features from us.
             </p>
-            <button
-              className="py-3 lg:py-4 px-12 lg:px-16 text-white-500 font-semibold rounded-lg bg-orange-500 hover:shadow-orange-md transition-all outline-none">
+            <button onClick={()=>{console.log("test")}}
+              className="py-3 lg:py-4 px-12 lg:px-16 text-white font-semibold rounded-lg bg-blue-500 hover:shadow-xl hover:shadow-blue-300 transition-all outline-none cursor-pointer">
               进入系统
             </button>
           </div>
           <div className="flex w-full">
               <Image
-                src="/assets/Illustration1.png"
+                src="/assets/ark-image-generate.jpeg"
                 alt="VPN Illustrasi"
                 quality={100}
                 width={612}
