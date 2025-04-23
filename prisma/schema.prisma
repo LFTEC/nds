@@ -1,15 +1,92 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model t_combo {
+  combo_id     Int      @id(map: "t_combo_pk") @default(autoincrement())
+  combo_name   String?  @db.VarChar(50)
+  multi_select Boolean?
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model t_combo_items {
+  item_id       Int      @id(map: "t_combo_items_pk") @default(autoincrement())
+  combo_id      Int?
+  item_name     String?  @db.VarChar(50)
+  is_abnormal   Boolean?
+  abnormal_text String?
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model t_detection_catgory {
+  category_id   Int       @id(map: "t_detection_catgory_pk") @default(autoincrement())
+  category_name String?   @db.VarChar(50)
+  serial_no     Int?
+  create_date   DateTime? @db.Date
+  create_user   String?   @db.VarChar(20)
+  change_date   DateTime? @db.Date
+  change_user   String?   @db.VarChar(20)
+  invisible     Boolean?
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model t_detection_indicators {
+  indicator_id     Int      @id(map: "t_detection_indicators_pk") @default(autoincrement())
+  indicator_name   String?  @db.VarChar(50)
+  serial_no        Int?
+  invisible        Boolean?
+  category_id      Int?
+  type             String?  @db.VarChar(10)
+  is_abnormal_text Boolean?
+  threshold_low    Decimal? @db.Decimal(11, 2)
+  threshold_high   Decimal? @db.Decimal(11, 2)
+  unit             String?  @db.VarChar(10)
+  abnormal_text    String?
+  combo_id         Int?
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model t_nori_detection {
+  nori_id       String    @db.VarChar(20)
+  indicator_id  Int
+  data_string   String?   @db.VarChar(50)
+  data_num      Decimal?  @db.Decimal(11, 2)
+  invisible     Boolean?
+  data_pic      Bytes?
+  data_bool     Boolean?
+  abnormal_text String?
+  combo_item_id Int?
+  user_id       String?   @db.VarChar(20)
+  create_date   DateTime? @db.Date
+
+  @@id([nori_id, indicator_id], map: "t_nori_detection_pk")
+}
+
+model t_nori_detection_combo_item {
+  nori_id       String  @db.VarChar(20)
+  indicator_id  Int
+  item_id       Int?
+  abnormal_text String?
+
+  @@id([nori_id, indicator_id], map: "t_nori_detection_combo_item_pk")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model t_nori_info {
+  nori_id         String    @id(map: "t_nori_info_pk") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  vendor          String?   @db.VarChar(50)
+  exhibition_date DateTime? @db.Date
+  exhibition_id   String?   @db.VarChar(20)
+  production_date DateTime? @db.Date
+  maritime        String?   @db.VarChar(20)
+  box_quantity    Int?
+
+  @@unique([vendor, exhibition_date, exhibition_id], map: "t_nori_info_unique")
 }

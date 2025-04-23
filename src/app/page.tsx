@@ -1,9 +1,15 @@
-"use client"
+'use client'
 import Image from "next/image";
 import {FaFlask} from "react-icons/fa6";
 import { Button } from "@/components/ui/button";
+import { createTest } from "@/services/index";
+
+const create = async () =>{
+  await createTest();
+};
 
 export default function Home() {
+
   return (
     <>
       <header className="fixed top-0 w-full z-30 bg-white transition-all ">
@@ -30,10 +36,11 @@ export default function Home() {
               Provide a network for all your needs with ease and fun using
               LaslesVPN discover interesting features from us.
             </p>
-            <button onClick={()=>{console.log("test")}}
-              className="py-3 lg:py-4 px-12 lg:px-16 text-white font-semibold rounded-lg bg-blue-500 hover:shadow-xl hover:shadow-blue-300 transition-all outline-none cursor-pointer">
-              进入系统
-            </button>
+            <Button type="button" 
+              onClick={create()}
+              className="tracking-normal mt-6 py-6 lg:py-4 h-14 px-12 lg:px-16 text-white font-semibold rounded-lg text-base hover: shadow-blue-300 hover:shadow-xl transition-all outline-none cursor-pointer">
+                进入系统
+            </Button>
           </div>
           <div className="flex w-full">
               <Image
