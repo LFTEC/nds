@@ -1,92 +1,144 @@
 generator client {
   provider = "prisma-client-js"
   output   = "../src/generated/prisma"
+  previewFeatures = ["postgresqlExtensions"]
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  extensions = [uuidOssp(map:"uuid-ossp")]
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model t_combo {
-  combo_id     Int      @id(map: "t_combo_pk") @default(autoincrement())
-  combo_name   String?  @db.VarChar(50)
-  multi_select Boolean?
+model combo {
+  id        Int         @id(map: "t_combo_pk") @default(autoincrement()) @map("combo_id")
+  comboName String?     @db.VarChar(50) @map("combo_name")
+  isOption  Boolean?    @map("isOption")
+  items     comboItem[]
+  indicators  indicator[]
+  @@map("t_combo")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model t_combo_items {
-  item_id       Int      @id(map: "t_combo_items_pk") @default(autoincrement())
-  combo_id      Int?
-  item_name     String?  @db.VarChar(50)
-  is_abnormal   Boolean?
-  abnormal_text String?
+model comboItem {
+  id          Int       @id(map: "t_combo_items_pk") @default(autoincrement()) @map("item_id")
+  comboId     Int       @map("combo_id")
+  name        String    @db.VarChar(50) @map("item_name")
+  isAbnormal  Boolean   @map("is_abnormal")
+  serialNo    Int?      @map("serial_no")
+  combo       combo     @relation(fields: [comboId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("t_combo_items")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model t_detection_catgory {
-  category_id   Int       @id(map: "t_detection_catgory_pk") @default(autoincrement())
-  category_name String?   @db.VarChar(50)
-  serial_no     Int?
-  create_date   DateTime? @db.Date
-  create_user   String?   @db.VarChar(20)
-  change_date   DateTime? @db.Date
-  change_user   String?   @db.VarChar(20)
-  invisible     Boolean?
+model indicator {
+  id                  Int         @id(map: "t_detection_indicators_pk") @default(autoincrement()) @map("indicator_id")
+  name                String      @db.VarChar(50) @map("indicator_name")
+  serialNo            Int?        @map("serial_no")
+  noDetection         Boolean     @map("no_detection")
+  categoryId          Int         @map("category_id")
+  type                String      @db.VarChar(10)
+  hasSuggestionText   Boolean     @map("has_suggestion_text")
+  thresholdLow        Decimal?    @db.Decimal(11, 2) @map("threshold_low")
+  thresholdHigh       Decimal?    @db.Decimal(11, 2) @map("threshold_high")
+  unit                String      @db.VarChar(10)
+  suggestionText      String?     @map("suggestion_text")
+  comboId             Int?        @map("combo_id")
+
+  category            category    @relation(fields: [categoryId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  combo               combo?      @relation(fields: [comboId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  detectResults       detectResult[]
+  @@map("t_detection_indicators")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model t_detection_indicators {
-  indicator_id     Int      @id(map: "t_detection_indicators_pk") @default(autoincrement())
-  indicator_name   String?  @db.VarChar(50)
-  serial_no        Int?
-  invisible        Boolean?
-  category_id      Int?
-  type             String?  @db.VarChar(10)
-  is_abnormal_text Boolean?
-  threshold_low    Decimal? @db.Decimal(11, 2)
-  threshold_high   Decimal? @db.Decimal(11, 2)
-  unit             String?  @db.VarChar(10)
-  abnormal_text    String?
-  combo_id         Int?
+model detectResult {
+  noriId            String    @db.VarChar(20) @map("nori_id")
+  indicatorId       Int       @map("indicator_id")
+  stringData        String?   @db.VarChar(50) @map("data_string")
+  numData           Decimal?  @db.Decimal(11, 2) @map("data_num")
+  result            String?   @db.VarChar(1) @map("detection_result")
+  binData           Bytes?    @map("data_pic")
+  boolData          Boolean?  @map("data_bool")
+  suggestionText    String?   @map("suggestion_text")
+  inspectorId       String?   @db.VarChar(20) @map("user_id")
+  createDate        DateTime? @db.Date @map("create_date")
+  comboItemData     Int?      @map("data_item")
+  inspectDate       DateTime? @db.Date @map("detection_date")
+
+  nori              nori          @relation(fields: [noriId], references: [id], onDelete: NoAction, onUpdate: NoAction) 
+  indicator         indicator     @relation(fields: [indicatorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  inspector         user?         @relation(fields: [inspectorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([noriId, indicatorId], map: "t_nori_detection_pk")
+  @@map("t_nori_detection")
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model t_nori_detection {
-  nori_id       String    @db.VarChar(20)
-  indicator_id  Int
-  data_string   String?   @db.VarChar(50)
-  data_num      Decimal?  @db.Decimal(11, 2)
-  invisible     Boolean?
-  data_pic      Bytes?
-  data_bool     Boolean?
-  abnormal_text String?
-  combo_item_id Int?
-  user_id       String?   @db.VarChar(20)
-  create_date   DateTime? @db.Date
-
-  @@id([nori_id, indicator_id], map: "t_nori_detection_pk")
-}
-
-model t_nori_detection_combo_item {
-  nori_id       String  @db.VarChar(20)
-  indicator_id  Int
-  item_id       Int?
-  abnormal_text String?
-
-  @@id([nori_id, indicator_id], map: "t_nori_detection_combo_item_pk")
-}
-
-/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
-model t_nori_info {
-  nori_id         String    @id(map: "t_nori_info_pk") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  vendor          String?   @db.VarChar(50)
-  exhibition_date DateTime? @db.Date
-  exhibition_id   String?   @db.VarChar(20)
-  production_date DateTime? @db.Date
+model nori {
+  id              String    @id(map: "t_nori_info_pk") @default(dbgenerated("uuid_generate_v4()")) @map("nori_id") @db.Uuid
+  vendor          String    @db.VarChar(50)
+  exhibitionDate  DateTime  @map("exhibition_date") @db.Date
+  exhibitionId    String    @map("exhibition_id") @db.VarChar(20)
+  productionDate  DateTime? @map("production_date") @db.Date
   maritime        String?   @db.VarChar(20)
-  box_quantity    Int?
+  boxQuantity     Int?      @map("box_quantity")
+  batchNo         String    @db.VarChar(20) @map("batch_no")
+  creatorId       String    @db.Uuid @map("user_id")
+  createDate      DateTime? @db.Date @map("create_date")
+  startDate       DateTime? @db.Date @map("detection_date")
+  finishDate      DateTime? @db.Date @map("complete_date")
+  level           String?   @db.VarChar(10)
 
-  @@unique([vendor, exhibition_date, exhibition_id], map: "t_nori_info_unique")
+  creator         user      @relation(fields: [creatorId], references: [id], onUpdate: NoAction, onDelete: NoAction)
+
+  detections      detectResult[]
+  categories      detectCategory[]
+
+  @@unique([vendor, exhibitionDate, exhibitionId], map: "t_nori_info_unique")
+  @@map("t_nori_info")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model category {
+  id            Int         @id(map: "t_detection_catgory_pk") @default(autoincrement()) @map("category_id")
+  name          String?     @db.VarChar(50) @map("category_name")
+  serialNo      Int?        @map("serial_no")
+  invisible     Boolean?    
+
+
+  indicators    indicator[]
+  detections    detectCategory[]
+
+  @@map("t_detection_category")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model detectCategory {
+  noriId        String   @db.Uuid @map("nori_id")
+  categoryId    Int      @map("category_id")
+  noDetection   Boolean?
+
+  nori          nori      @relation(fields: [noriId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  category      category  @relation(fields: [categoryId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([noriId, categoryId], map: "t_nori_category_pk")
+  @@map("t_nori_category")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model user {
+  id        String  @id(map: "users_pk") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid @map("user_id")
+  username  String  @unique(map: "users_unique") @db.VarChar(20) @map("user_name")
+  name      String? @db.VarChar(50)
+  email     String? @db.VarChar(100)
+  password  String?
+
+  detectResults   detectResult[]
+  createNoris     nori[]
+
+  @@map("t_users")
 }

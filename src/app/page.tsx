@@ -16,7 +16,7 @@ export default function Home() {
         <nav className="max-w-screen-xl px-6 sm:px-8 lg:px-6 mx-auto grid grid-flow-col py-3 sm:py-4">
           <div className="col-start-1 col-end-2 flex items-center">
             <FaFlask className="text-blue-500 w-6 h-6" />
-            <span className="pl-4 font-bold text-blue-500">Nori Detection System</span>
+            <span className="pl-4 font-bold text-blue-500">Nori Evaluation System</span>
           </div>
           <div className="col-start-10 col-end-12 font-medium flex justify-end items-center">
             <button className="font-bold tracking-wide py-2 px-5 sm:px-8 border border-blue-500 text-blue-500 bg-white outline-none rounded-l-full rounded-r-full capitalize hover:bg-blue-500 hover:text-white transition-all hover:shadow-orange ">
@@ -30,14 +30,13 @@ export default function Home() {
         <div className="grid grid-flow-row sm:grid-flow-col grid-rows-2 md:grid-rows-1 sm:grid-cols-2 gap-8 py-6 sm:py-16">
           <div className=" flex flex-col justify-center items-start row-start-2 sm:row-start-1">
             <h1 className="text-2xl lg:text-3xl xl:text-4xl text-black leading-normal font-bold ">
-              紫菜检测系统
+              紫菜营养评价系统
             </h1>
             <p className="text-gray-700 mt-4 mb-6">
               Provide a network for all your needs with ease and fun using
               LaslesVPN discover interesting features from us.
             </p>
             <Button type="button" 
-              onClick={create()}
               className="tracking-normal mt-6 py-6 lg:py-4 h-14 px-12 lg:px-16 text-white font-semibold rounded-lg text-base hover: shadow-blue-300 hover:shadow-xl transition-all outline-none cursor-pointer">
                 进入系统
             </Button>

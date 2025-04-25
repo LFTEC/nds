@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "NDS - 紫菜检测系统",
-  description: "紫菜检测系统",
+  title: "NES - 紫菜营养评价系统",
+  description: "紫菜营养评价系统",
 };
 
 export default function RootLayout({
