@@ -56,7 +56,7 @@ model indicator {
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model detectResult {
-  noriId            String    @db.VarChar(20) @map("nori_id")
+  noriId            String    @db.Uuid @map("nori_id")
   indicatorId       Int       @map("indicator_id")
   stringData        String?   @db.VarChar(50) @map("data_string")
   numData           Decimal?  @db.Decimal(11, 2) @map("data_num")
@@ -64,7 +64,7 @@ model detectResult {
   binData           Bytes?    @map("data_pic")
   boolData          Boolean?  @map("data_bool")
   suggestionText    String?   @map("suggestion_text")
-  inspectorId       String?   @db.VarChar(20) @map("user_id")
+  inspectorId       String?   @db.Uuid @map("user_id")
   createDate        DateTime? @db.Date @map("create_date")
   comboItemData     Int?      @map("data_item")
   inspectDate       DateTime? @db.Date @map("detection_date")
