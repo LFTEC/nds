@@ -133,9 +133,9 @@ model detectCategory {
 model user {
   id        String  @id(map: "users_pk") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid @map("user_id")
   username  String  @unique(map: "users_unique") @db.VarChar(20) @map("user_name")
-  name      String? @db.VarChar(50)
+  name      String  @db.VarChar(50)
   email     String? @db.VarChar(100)
-  password  String?
+  password  String
 
   detectResults   detectResult[]
   createNoris     nori[]
