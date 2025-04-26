@@ -1,43 +1,61 @@
+'use client'
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { useActionState } from "react"
+import { authenticate } from "@/lib/login"
+import { AiOutlineExclamationCircle } from "react-icons/ai";
+import { useSearchParams } from "next/navigation";
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"form">) {
+  const [errorMessage, formAction, isPending] = useActionState(authenticate, undefined);
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get('callbackUrl') || '/main';
+
   return (
-    <form className={cn("flex flex-col gap-6", className)} {...props}>
+    <form className={cn("flex flex-col gap-6", className)}  action={formAction}>
       <div className="flex flex-col items-center gap-2 text-center">
-        <h1 className="text-2xl font-bold">Login to your account</h1>
+        <h1 className="text-2xl font-bold">登录系统</h1>
         <p className="text-muted-foreground text-sm text-balance">
-          Enter your email below to login to your account
+          输入您的账号密码以登入系统
         </p>
       </div>
       <div className="grid gap-6">
         <div className="grid gap-3">
-          <Label htmlFor="email">Email</Label>
-          <Input id="email" type="email" placeholder="m@example.com" required />
+          <Label htmlFor="username">用户名</Label>
+          <Input id="username" name="username" type="username" placeholder="username" required />
         </div>
         <div className="grid gap-3">
           <div className="flex items-center">
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor="password">密码</Label>
             <a
               href="#"
               className="ml-auto text-sm underline-offset-4 hover:underline"
             >
-              Forgot your password?
+              忘记密码？
             </a>
           </div>
-          <Input id="password" type="password" required />
+          <Input id="password" name="password" type="password" required minLength={8} />
+        </div>
+        <input type="hidden" name="redirectTo" value={callbackUrl} />
+        <div id="login-error" className="flex">
+          {errorMessage && (
+            <>
+              <AiOutlineExclamationCircle className="h-5 w-5 text-red-500 mx-2"/>
+              <p className="text-sm text-red-500">{errorMessage}</p>
+            </>
+          )}
         </div>
         <Button type="submit" className="w-full">
-          Login
+          登录
         </Button>
-        <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
+        {/* <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
           <span className="bg-background text-muted-foreground relative z-10 px-2">
-            Or continue with
+            或使用下面方法登录
           </span>
         </div>
         <Button variant="outline" className="w-full">
@@ -48,12 +66,12 @@ export function LoginForm({
             />
           </svg>
           Login with GitHub
-        </Button>
+        </Button> */}
       </div>
       <div className="text-center text-sm">
-        Don&apos;t have an account?{" "}
+        没有账号？{" "}
         <a href="#" className="underline underline-offset-4">
-          Sign up
+          联系管理员注册
         </a>
       </div>
     </form>

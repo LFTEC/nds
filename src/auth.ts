@@ -8,10 +8,11 @@ import bcrypt from 'bcrypt';
 
 
 export interface CUser extends User {
-    username: String
+    username: string,
+    password: string
 };
 
-async function getUser(username: string) {
+async function getUser(username: string): Promise<CUser|undefined> {
     try {
         username = username.toLowerCase().trim();
         let user = await getUserInfo(username);
@@ -36,7 +37,6 @@ export const {auth, signIn, signOut} = NextAuth({
                     const {username, password} = parsedCredential.data;
                     const user = await getUser(username);
                     if(!user) return null;
-                    
                     const bMatch = await bcrypt.compare(password, user.password);
                     if(bMatch) return user as CUser;
                 }
