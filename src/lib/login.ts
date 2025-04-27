@@ -1,6 +1,6 @@
 
 'use server'
-import { signIn } from "@/auth";
+import { signIn, signOut } from "@/auth";
 import { AuthError, CredentialsSignin } from "next-auth";
 
 export async function authenticate(prefState: string | undefined, formData: FormData) {
@@ -17,4 +17,8 @@ export async function authenticate(prefState: string | undefined, formData: Form
         
         throw error;      
     }
+}
+
+export async function logout() {
+  await signOut({redirectTo: '/login'});
 }

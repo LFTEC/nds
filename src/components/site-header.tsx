@@ -1,8 +1,51 @@
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { SidebarTrigger } from "@/components/ui/sidebar"
+import {
+  Breadcrumb,
+  BreadcrumbEllipsis,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator
+} from "@/components/ui/breadcrumb";
+import { usePathname } from "next/navigation";
+import React from "react";
 
 export function SiteHeader() {
+  const pathname = usePathname();
+  const paths = pathname.split('/').slice(1); 
+  console.log(paths);
+  const menu = [
+    {
+      name: "main",
+      text: "主页",
+      url: "/main"
+    },
+    {
+      name: "registry",
+      text: "待检登记",
+      url: "/main/registry"
+    },
+    {
+      name: "center",
+      text: "检测中心",
+      url: "/main/center"
+    },
+    {
+      name: "reports",
+      text: "检单查询",
+      url: "/main/report"
+    }
+  ];
+
+  const menuList = paths.map((path)=>{
+    return menu.find((m)=>m.name === path);
+  });
+
+  console.log(menuList);
+
   return (
     <header className="flex h-(--header-height) shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)">
       <div className="flex w-full items-center gap-1 px-4 lg:gap-2 lg:px-6">
@@ -11,7 +54,19 @@ export function SiteHeader() {
           orientation="vertical"
           className="mx-2 data-[orientation=vertical]:h-4"
         />
-        <h1 className="text-base font-medium">Documents</h1>
+        <Breadcrumb>
+          <BreadcrumbList>
+            {menuList.map((path, index)=>(  
+              <React.Fragment key={path?.name}>  
+                {index >= 1 && <BreadcrumbSeparator ></BreadcrumbSeparator>}     
+                <BreadcrumbItem >
+                  {index < menuList.length - 1 ? <BreadcrumbLink href={path?.url}>{path?.text}</BreadcrumbLink>: <BreadcrumbPage>{path?.text}</BreadcrumbPage>}
+                </BreadcrumbItem>
+              </React.Fragment> 
+            ))}
+            
+          </BreadcrumbList>
+        </Breadcrumb>
         <div className="ml-auto flex items-center gap-2">
           <Button variant="ghost" asChild size="sm" className="hidden sm:flex">
             <a
