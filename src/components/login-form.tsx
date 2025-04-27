@@ -1,10 +1,10 @@
-'use client'
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { useActionState } from "react"
-import { authenticate } from "@/lib/login"
+"use client";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useActionState } from "react";
+import { authenticate } from "@/lib/login";
 import { AiOutlineExclamationCircle } from "react-icons/ai";
 import { useSearchParams } from "next/navigation";
 
@@ -12,12 +12,15 @@ export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"form">) {
-  const [errorMessage, formAction, isPending] = useActionState(authenticate, undefined);
+  const [errorMessage, formAction, isPending] = useActionState(
+    authenticate,
+    undefined
+  );
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get('callbackUrl') || '/main';
+  const callbackUrl = searchParams.get("callbackUrl") || "/main";
 
   return (
-    <form className={cn("flex flex-col gap-6", className)}  action={formAction}>
+    <form className={cn("flex flex-col gap-6", className)} action={formAction}>
       <div className="flex flex-col items-center gap-2 text-center">
         <h1 className="text-2xl font-bold">登录系统</h1>
         <p className="text-muted-foreground text-sm text-balance">
@@ -27,7 +30,14 @@ export function LoginForm({
       <div className="grid gap-6">
         <div className="grid gap-3">
           <Label htmlFor="username">用户名</Label>
-          <Input id="username" name="username" type="username" placeholder="username" required />
+          <Input
+            id="username"
+            name="username"
+            type="username"
+            placeholder="username"
+            tabIndex={1}
+            required
+          />
         </div>
         <div className="grid gap-3">
           <div className="flex items-center">
@@ -39,13 +49,20 @@ export function LoginForm({
               忘记密码？
             </a>
           </div>
-          <Input id="password" name="password" type="password" required minLength={8} />
+          <Input
+            id="password"
+            name="password"
+            type="password"
+            required
+            minLength={8}
+            tabIndex={2}
+          />
         </div>
         <input type="hidden" name="redirectTo" value={callbackUrl} />
         <div id="login-error" className="flex">
           {errorMessage && (
             <>
-              <AiOutlineExclamationCircle className="h-5 w-5 text-red-500 mx-2"/>
+              <AiOutlineExclamationCircle className="h-5 w-5 text-red-500 mx-2" />
               <p className="text-sm text-red-500">{errorMessage}</p>
             </>
           )}
@@ -75,5 +92,5 @@ export function LoginForm({
         </a>
       </div>
     </form>
-  )
+  );
 }

@@ -1,5 +1,18 @@
 
+import { Session } from "inspector/promises";
 import type { NextAuthConfig } from "next-auth";
+
+declare module "next-auth" {
+  interface User {
+    username: string
+  }
+
+  interface session {
+    user: {
+      username: string
+    }
+  }
+}
 
 export const authConfig = {
     pages: {
@@ -18,6 +31,20 @@ export const authConfig = {
             }
 
             return true;
+        },   
+        session: ({session, token, user}) =>{
+          session.user.id = token.sub || user.id;
+          session.userId = token.sub || user.id;
+          session.user.username = String(token.username);
+          return session;
+        },
+        jwt: ({token, user}) => {
+          
+          if(user) {
+            token.username = user.username;
+          }
+
+          return token;
         }
     }
 } satisfies NextAuthConfig;
