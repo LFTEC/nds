@@ -108,7 +108,7 @@ model category {
   name          String?     @db.VarChar(50) @map("category_name")
   serialNo      Int?        @map("serial_no")
   invisible     Boolean?    
-
+  description   String?
 
   indicators    indicator[]
   detections    detectCategory[]
