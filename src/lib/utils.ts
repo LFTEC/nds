@@ -6,6 +6,6 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export interface errorState {
-  state: "error" | "warning";
-  message: string;
+  state: "error" | "warning" | "success";
+  message?: string | null;
 }
