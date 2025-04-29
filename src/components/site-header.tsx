@@ -17,6 +17,7 @@ export function SiteHeader() {
   const pathname = usePathname();
   const paths = pathname.split('/').slice(1); 
   console.log(paths);
+
   const menu = [
     {
       name: "main",
@@ -37,7 +38,18 @@ export function SiteHeader() {
       name: "reports",
       text: "检单查询",
       url: "/main/report"
-    }
+    },
+    {
+      name: "categories",
+      text: "检验项设置",
+      url: "/main/categories"
+    },
+    {
+      name: "signup",
+      text: "检验员注册",
+      url: "/main/signup"
+    },
+
   ];
 
   const menuList = paths.map((path)=>{

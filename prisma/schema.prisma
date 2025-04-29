@@ -105,9 +105,9 @@ model nori {
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model category {
   id            Int         @id(map: "t_detection_catgory_pk") @default(autoincrement()) @map("category_id")
-  name          String?     @db.VarChar(50) @map("category_name")
-  serialNo      Int?        @map("serial_no")
-  invisible     Boolean?    
+  name          String     @db.VarChar(50) @map("category_name")
+  serialNo      Int        @map("serial_no")
+  invisible     Boolean    
   description   String?
 
   indicators    indicator[]

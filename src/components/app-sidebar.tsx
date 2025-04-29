@@ -44,62 +44,14 @@ const data = {
       icon: IconDashboard,
     }
   ],
-  navClouds: [
-    {
-      title: "Capture",
-      icon: IconCamera,
-      isActive: true,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Proposal",
-      icon: IconFileDescription,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Prompts",
-      icon: IconFileAi,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-  ],
   navSecondary: [
     {
       title: "检验项设置",
-      url: "/main/setting",
+      url: "/main/categories",
       icon: IconSettings,
     },
     {
-      title: "检验员录入",
+      title: "检验员注册",
       url: "/main/signup",
       icon: IconSettings,
     },
@@ -116,13 +68,13 @@ const data = {
       icon: IconDatabase,
     },
     {
-      name: "检验录入",
-      url: "/main/processing",
+      name: "检测中心",
+      url: "/main/center",
       icon: IconReport,
     },
     {
-      name: "已检查询",
-      url: "/main/complete",
+      name: "检单查询",
+      url: "/main/reports",
       icon: IconFileWord,
     },
   ],
