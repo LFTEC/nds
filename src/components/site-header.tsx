@@ -53,7 +53,12 @@ export function SiteHeader() {
   ];
 
   const menuList = paths.map((path)=>{
-    return menu.find((m)=>m.name === path);
+    const item = menu.find((m)=>m.name === path);
+    if(item) {
+      return item;
+    } else {
+      return {name: path, text: path, url: undefined}
+    }
   });
 
   console.log(menuList);
@@ -72,7 +77,7 @@ export function SiteHeader() {
               <React.Fragment key={path?.name}>  
                 {index >= 1 && <BreadcrumbSeparator ></BreadcrumbSeparator>}     
                 <BreadcrumbItem >
-                  {index < menuList.length - 1 ? <BreadcrumbLink href={path?.url}>{path?.text}</BreadcrumbLink>: <BreadcrumbPage>{path?.text}</BreadcrumbPage>}
+                  {index < menuList.length - 1 && path.url ? <BreadcrumbLink href={path?.url}>{path?.text}</BreadcrumbLink>: <BreadcrumbPage>{path?.text}</BreadcrumbPage>}
                 </BreadcrumbItem>
               </React.Fragment> 
             ))}

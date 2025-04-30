@@ -1,3 +1,4 @@
+'use client'
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -9,9 +10,13 @@ import {
 } from "@/components/ui/card";
 import { FiPlusCircle } from "react-icons/fi";
 
+import { createCategory } from "@/services/categories";
+import { useActionState } from "react";
+
 export function NewCard() {
+  const [state, formAction] = useActionState(createCategory, {state: "success"});
   return (
-    <form action="">
+    <form action={formAction}>
       <button
         type="submit"
         className="block w-full h-full p-0 text-left bg-transparent border-none"
