@@ -13,8 +13,9 @@ datasource db {
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model combo {
   id        Int         @id(map: "t_combo_pk") @default(autoincrement()) @map("combo_id")
-  comboName String?     @db.VarChar(50) @map("combo_name")
-  isOption  Boolean?    @map("isOption")
+  comboName String      @db.VarChar(50) @map("combo_name")
+  isOption  Boolean     @map("isOption")
+
   items     comboItem[]
   indicators  indicator[]
   @@map("t_combo")
@@ -26,7 +27,7 @@ model comboItem {
   comboId     Int       @map("combo_id")
   name        String    @db.VarChar(50) @map("item_name")
   isAbnormal  Boolean   @map("is_abnormal")
-  serialNo    Int?      @map("serial_no")
+  serialNo    Int       @map("serial_no")
   combo       combo     @relation(fields: [comboId], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@map("t_combo_items")
@@ -36,7 +37,8 @@ model comboItem {
 model indicator {
   id                  Int         @id(map: "t_detection_indicators_pk") @default(autoincrement()) @map("indicator_id")
   name                String      @db.VarChar(50) @map("indicator_name")
-  serialNo            Int?        @map("serial_no")
+  description         String      @map("indicator_des") @default("")
+  serialNo            Int         @map("serial_no")
   noDetection         Boolean     @map("no_detection")
   categoryId          Int         @map("category_id")
   type                String      @db.VarChar(10)

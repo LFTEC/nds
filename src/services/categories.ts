@@ -21,7 +21,18 @@ const formSchema = z
 export async function getCategoryById(id: number) {
   return await prisma.category.findUniqueOrThrow({
     where: { id: id },
-    include: { indicators: true }
+    include: {
+      indicators: {
+        orderBy: [
+          {
+            noDetection: "asc"
+          },
+          {
+            serialNo: "asc"
+          }
+        ],
+      },
+    },
   });
 }
 
