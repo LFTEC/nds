@@ -28,7 +28,11 @@ import { zhCN } from "date-fns/locale";
 import { HiOutlinePencil } from "react-icons/hi2";
 import { HiOutlineCalendarDays } from "react-icons/hi2";
 
-import { noriData, registrySchema, formSchema } from "@/data/registry/registryData";
+import {
+  noriData,
+  registrySchema,
+  formSchema,
+} from "@/data/registry/registryData";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -36,8 +40,7 @@ import { useState } from "react";
 import { cn, errorState } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { updateNori } from "@/services/noriService";
-
+import { getNoriDataById, updateNori } from "@/services/noriService";
 
 export function EditNori({
   noriData,
@@ -55,7 +58,6 @@ export function EditNori({
       exhibitionDate: new Date(),
       exhibitionId: "",
       productionDate: new Date(),
-      batchNo: "",
       boxQuantity: null,
       maritime: null,
     };
@@ -63,7 +65,6 @@ export function EditNori({
     let parsedNori = formSchema.parse(noriData);
     parsedData = parsedNori;
   }
-
 
   const form = useForm<z.infer<typeof formSchema>>({
     defaultValues: parsedData,
@@ -74,25 +75,30 @@ export function EditNori({
   const [open, setOpen] = useState(false);
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
-
-    const result = await updateNori(noriData?.id, {state:"success"}, data);
+    const result = await updateNori(noriData?.id, { state: "success" }, data);
     setState(result);
-
     setOpen(result.state === "error");
   };
 
   return (
-    <Dialog open={open} onOpenChange={(e)=>{setOpen(e); form.reset(); setState({state: "success"})}}>
+    <Dialog
+      open={open}
+      onOpenChange={(e) => {
+        setOpen(e);
+        setState({ state: "success" });
+      }}
+    >
       <DialogTrigger asChild>
         {behavior === "create" ? (
-          <Button className={cn("mx-2 my-2 font-semibold",className)}>
+          <Button className={cn("mx-2 my-2 font-semibold", className)}>
             创建待检记录
           </Button>
         ) : (
           <Button
             variant="ghost"
-            className={cn(              
-              "flex gap-2 items-center border py-1 px-2 rounded-md hover:bg-blue-200 transition-colors",className
+            className={cn(
+              "flex gap-2 items-center border py-1 px-2 rounded-md hover:bg-blue-200 transition-colors",
+              className
             )}
           >
             <HiOutlinePencil className="size-4" />
@@ -108,6 +114,8 @@ export function EditNori({
           </DialogDescription>
         </DialogHeader>
 
+        {noriData?.batchNo && <h2 className="mb-3">批次-{noriData.batchNo}</h2>}
+
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
             {state.state == "error" && (
@@ -115,20 +123,6 @@ export function EditNori({
                 <p>{state.message}</p>
               </div>
             )}
-
-            <FormField
-              control={form.control}
-              name="batchNo"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>检验批次</FormLabel>
-                  <FormControl>
-                    <Input {...field} disabled />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
 
             <FormField
               control={form.control}
@@ -169,7 +163,6 @@ export function EditNori({
                         onSelect={field.onChange}
                         initialFocus
                         locale={zhCN}
-                        
                       />
                     </PopoverContent>
                   </Popover>

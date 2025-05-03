@@ -7,6 +7,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { auth } from "@/auth";
 import {format} from 'date-fns';
+import { redirect } from "next/navigation";
 
 export async function getTotalPages(query: string) {
   try {
@@ -75,6 +76,14 @@ export async function getNoriListByFilter(query: string, currentPage: number): P
   }
 }
 
+export async function getNoriDataById(id: string) {
+  try{
+    return await prisma.nori.findUnique({where: {id: id}});
+  } catch(error){
+    console.error("查询紫菜信息时发生错误", error);
+  }
+}
+
 
 
 export async function updateNori(id: string|undefined, privState: errorState, data: z.infer<typeof formSchema>):Promise<errorState> {
@@ -134,6 +143,21 @@ export async function updateNori(id: string|undefined, privState: errorState, da
     revalidatePath("/main/registry")
     return {state: "success"};
   } catch(error){
-    return {state:"error", message:"更新紫菜信息时发生异常" + error.message};
+    return {state:"error", message:"更新紫菜信息时发生异常"};
+  }
+}
+
+export async function deleteNori(id: string, prevState: errorState, formData: FormData):Promise<errorState> {
+  try{
+    await prisma.nori.delete({
+      where: {id:id}
+    });
+
+    revalidatePath("/main/registry");
+    redirect("/main/registry");
+  } catch(error){
+    console.error(error);
+
+    return {state:"error", message: `删除待检项目${id}时发生异常`}
   }
 }

@@ -5,7 +5,7 @@ export const registrySchema = z.object({
   id: z.string(),
   vendor: z.string().min(1, "请录入厂家"),
   exhibitionDate: z.coerce.date({ invalid_type_error: "请输入参展日期" }),
-  exhibitionId: z.string({ invalid_type_error: "请输入展台编号" }),
+  exhibitionId: z.string({ invalid_type_error: "请输入展台编号" }).min(1, "请输入展台编号"),
   productionDate: z.coerce
     .date({ invalid_type_error: "请输入产品生产日期" })
     .nullable(),
@@ -24,6 +24,7 @@ export const registrySchema = z.object({
 
 export const formSchema = registrySchema.omit({
   id: true,
+  batchNo: true,
   creatorId: true,
   createDate: true,
   startDate: true,
