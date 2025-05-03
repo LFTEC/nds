@@ -90,10 +90,11 @@ model nori {
   boxQuantity     Int?      @map("box_quantity")
   batchNo         String    @db.VarChar(20) @map("batch_no")
   creatorId       String    @db.Uuid @map("user_id")
-  createDate      DateTime? @db.Date @map("create_date")
+  createDate      DateTime  @db.Date @map("create_date")
   startDate       DateTime? @db.Date @map("detection_date")
   finishDate      DateTime? @db.Date @map("complete_date")
   level           String?   @db.VarChar(10)
+  summary         String?   
 
   creator         user      @relation(fields: [creatorId], references: [id], onUpdate: NoAction, onDelete: NoAction)
 
