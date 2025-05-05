@@ -89,3 +89,18 @@ export async function updateIndicator(id: number, prevState: errorState, data: z
     return {state: "error", message: "更新指标时发生异常"};
   }
 }
+
+export async function getAllValidIndicators() {
+
+}
+
+export async function getAllValidIndicatorQty() {
+  try{
+    return await prisma.indicator.count({
+      where: {noDetection: false}
+    });
+  } catch (error){
+    console.log("获取指标总量时发生异常", error);
+    throw new Error("获取指标总量时发生异常");
+  }
+}

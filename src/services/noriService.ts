@@ -161,3 +161,39 @@ export async function deleteNori(id: string, prevState: errorState, formData: Fo
     return {state:"error", message: `删除待检项目${id}时发生异常`}
   }
 }
+
+export async function getIndicatingNoriQty(query: string) {
+  
+}
+
+export async function getIndicatingNoris(query: string, currentPage: number) {
+  try{
+    const noriList = await prisma.nori.findMany({
+      select: {
+        id: true,
+        batchNo: true,
+        vendor: true,
+        exhibitionDate: true,
+        exhibitionId: true,
+        startDate: true,
+        finishDate: true,
+        detections: true
+      },
+      where: {
+        finishDate: null,
+        OR: [{
+          batchNo: {startsWith: query}
+        }, {
+          vendor: {startsWith: query}
+        }, {
+          exhibitionId: {startsWith: query}
+        }]
+      }
+    });
+
+    return noriList;
+  } catch(error){
+    console.error("查询待检清单时发生异常", error);
+    throw new Error("查询待检清单时发生异常");
+  }
+}

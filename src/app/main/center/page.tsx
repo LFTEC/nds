@@ -1,8 +1,9 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import  {RegistryTable} from "@/ui/registry/table";
-import { getNoriListByFilter, getTotalPages } from "@/services/noriService";
-import { noriData } from "@/data/registry/registryData";
-import { EditNori } from "@/ui/registry/edit-form";
+import { IndicatingTable } from "@/ui/center/table";
+import { getIndicatingList } from "@/services/centerService";
+import { getIndicatingNoriQty } from "@/services/noriService";
+
+
 
 export default async function Page(props: {
   searchParams?: Promise<{ query?: string; page?: number }>;
@@ -11,8 +12,8 @@ export default async function Page(props: {
   const query = searchParams?.query || "";
   const page = searchParams?.page|| 1;
 
-  const total = await getTotalPages(query);
-  const noriList: noriData[] = await getNoriListByFilter(query, page);
+  const total = await getIndicatingNoriQty(query);
+  const noriList = await getIndicatingList(query, page);
 
   return (
     <div className="flex grow gap-4 py-4 md:gap-6 md:py-6 px-4 lg:px-6">
@@ -23,7 +24,7 @@ export default async function Page(props: {
         </CardHeader>
         <CardContent>
           <p className="border-b"/>
-          <RegistryTable noriList={noriList} />
+          <IndicatingTable indicatingList={noriList} />
         </CardContent>
       </Card>
     </div>
