@@ -9,6 +9,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { indicatingData } from "@/data/center/centerData";
 import { HiOutlineArrowRightStartOnRectangle } from "react-icons/hi2";
+import Link from "next/link";
 
 export async function IndicatingTable({
   indicatingList,
@@ -50,9 +51,12 @@ export async function IndicatingTable({
                 <Button
                   variant="ghost"
                   className="flex gap-2 items-center border py-1 px-2 rounded-md hover:bg-blue-200 transition-colors"
+                  asChild
                 >
-                  <HiOutlineArrowRightStartOnRectangle className="size-4" />
-                  <span>录入</span>
+                  <Link href={`/main/center/${nori.id}/forms`}>
+                    <HiOutlineArrowRightStartOnRectangle className="size-4" />
+                    <span>录入</span>
+                  </Link>
                 </Button>
               </div>
             </TableCell>
