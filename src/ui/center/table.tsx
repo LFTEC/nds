@@ -8,9 +8,13 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { indicatingData } from "@/data/center/centerData";
+import { HiOutlineArrowRightStartOnRectangle } from "react-icons/hi2";
 
-export async function IndicatingTable({ indicatingList }: { indicatingList: indicatingData[] }) {
-
+export async function IndicatingTable({
+  indicatingList,
+}: {
+  indicatingList: indicatingData[];
+}) {
   return (
     <Table>
       <TableHeader>
@@ -35,15 +39,21 @@ export async function IndicatingTable({ indicatingList }: { indicatingList: indi
               {nori.exhibitionDate.toISOString().split("T")[0]}
             </TableCell>
             <TableCell>{nori.exhibitionId}</TableCell>
-            <TableCell>
-              {nori.indicatingItems}
-            </TableCell>
+            <TableCell>{nori.indicatingItems}</TableCell>
             <TableCell>{nori.finishedItems}</TableCell>
             <TableCell>{nori.startDate?.toISOString().split("T")[0]}</TableCell>
-            <TableCell>{nori.finishDate?.toISOString().split("T")[0]}</TableCell>
+            <TableCell>
+              {nori.finishDate?.toISOString().split("T")[0]}
+            </TableCell>
             <TableCell>
               <div className="flex items-center gap-2">
-                
+                <Button
+                  variant="ghost"
+                  className="flex gap-2 items-center border py-1 px-2 rounded-md hover:bg-blue-200 transition-colors"
+                >
+                  <HiOutlineArrowRightStartOnRectangle className="size-4" />
+                  <span>录入</span>
+                </Button>
               </div>
             </TableCell>
           </TableRow>
