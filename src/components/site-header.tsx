@@ -16,7 +16,6 @@ import React from "react";
 export function SiteHeader() {
   const pathname = usePathname();
   const paths = pathname.split('/').slice(1); 
-  console.log(paths);
 
   const menu = [
     {
@@ -61,7 +60,6 @@ export function SiteHeader() {
     }
   });
 
-  console.log(menuList);
 
   return (
     <header className="flex h-(--header-height) shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)">

@@ -10,6 +10,12 @@ export async function allCategories(): Promise<category[]> {
   return await prisma.category.findMany({ orderBy: { serialNo: "asc" } });
 }
 
+export async function allCategoriesWithIndicator() {
+  return await prisma.category.findMany(
+    {include: {indicators: true}}
+  );
+}
+
 const formSchema = z
   .object({
     id: z.number(),
@@ -25,11 +31,11 @@ export async function getCategoryById(id: number) {
       indicators: {
         orderBy: [
           {
-            noDetection: "asc"
+            noDetection: "asc",
           },
           {
-            serialNo: "asc"
-          }
+            serialNo: "asc",
+          },
         ],
       },
     },
@@ -93,12 +99,8 @@ export async function createCategory(
     });
     let maxNo = 1000;
     if ((maxSerialNo._max.serialNo ?? 0) >= 1000) {
-      console.log("great than 1000");
       maxNo = (maxSerialNo._max.serialNo ?? 0) + 1;
     }
-
-    console.log(maxSerialNo);
-    console.log(maxNo);
 
     await prisma.category.create({
       data: {

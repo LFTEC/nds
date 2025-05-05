@@ -23,7 +23,7 @@ export const TransformIndicatorType = (indType: string | undefined) => {
     case "B":
       return "布尔型";
     default:
-      console.log(`类型${indType}不存在`);
+      console.error(`类型${indType}不存在`);
       throw new Error(`类型${indType}不存在`);
   }
 }

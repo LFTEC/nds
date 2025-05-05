@@ -16,7 +16,6 @@ async function getUser(username: string): Promise<CUser|undefined> {
     try {
         username = username.toLowerCase().trim();
         let user = await getUserInfo(username);
-        console.log(user);
         return user;
     } catch(error) {
         console.error(`用户${username}不存在`, error);
@@ -37,7 +36,6 @@ export const {auth, signIn, signOut} = NextAuth({
                 if(parsedCredential.success) {
                     const {username, password} = parsedCredential.data;
                     const user = await getUser(username);
-                    console.log(user);
                     if(!user) return null;
                     const bMatch = await bcrypt.compare(password, user.password);
                     if(bMatch) return user as CUser;

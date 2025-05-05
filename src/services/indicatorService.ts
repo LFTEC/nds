@@ -13,7 +13,6 @@ export async function getIndicatorById(id: number): Promise<z.infer<typeof indic
     if(parsed.success) {
       return parsed.data;
     } else {
-      console.log(parsed.error.flatten().fieldErrors);
       throw new Error("error");
     }
   }
@@ -85,7 +84,6 @@ export async function updateIndicator(id: number, prevState: errorState, data: z
     return {state: "success"};
 
   } catch (error){
-    console.log(error);
     return {state: "error", message: "更新指标时发生异常"};
   }
 }
@@ -100,7 +98,6 @@ export async function getAllValidIndicatorQty() {
       where: {noDetection: false}
     });
   } catch (error){
-    console.log("获取指标总量时发生异常", error);
     throw new Error("获取指标总量时发生异常");
   }
 }

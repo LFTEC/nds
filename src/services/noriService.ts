@@ -197,3 +197,10 @@ export async function getIndicatingNoris(query: string, currentPage: number) {
     throw new Error("查询待检清单时发生异常");
   }
 }
+
+export async function getIndicatingNoriById(id: string) {
+  return await prisma.nori.findUniqueOrThrow({
+    include: {categories: {include: {category: true}}, detections: {include: {indicator: true}}},
+    where: {id: id}
+  });
+}

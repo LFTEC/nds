@@ -62,7 +62,7 @@ model detectResult {
   indicatorId       Int       @map("indicator_id")
   stringData        String?   @db.VarChar(50) @map("data_string")
   numData           Decimal?  @db.Decimal(11, 2) @map("data_num")
-  result            String?   @db.VarChar(1) @map("detection_result")
+  result            String   @db.VarChar(1) @map("detection_result")
   binData           Bytes?    @map("data_pic")
   boolData          Boolean?  @map("data_bool")
   suggestionText    String?   @map("suggestion_text")
@@ -108,10 +108,10 @@ model nori {
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 model category {
   id            Int         @id(map: "t_detection_catgory_pk") @default(autoincrement()) @map("category_id")
-  name          String     @db.VarChar(50) @map("category_name")
-  serialNo      Int        @map("serial_no")
+  name          String      @db.VarChar(50) @map("category_name")
+  serialNo      Int         @map("serial_no")
   invisible     Boolean    
-  description   String?
+  description   String
 
   indicators    indicator[]
   detections    detectCategory[]
@@ -123,7 +123,7 @@ model category {
 model detectCategory {
   noriId        String   @db.Uuid @map("nori_id")
   categoryId    Int      @map("category_id")
-  noDetection   Boolean?
+  noDetection   Boolean
 
   nori          nori      @relation(fields: [noriId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   category      category  @relation(fields: [categoryId], references: [id], onDelete: NoAction, onUpdate: NoAction)
