@@ -5,6 +5,11 @@ import { category, combo, comboItem, detectResult, indicator, nori } from "@/gen
 import { allCategoriesWithIndicator } from "./categories";
 import prisma from "@/lib/prisma";
 import {format} from 'date-fns';
+import {z} from 'zod';
+import { formSchema } from "@/data/center/centerData";
+import { errorState } from "@/lib/utils";
+import { auth } from "@/auth";
+import { Prisma } from "@/generated/prisma/client";
 
 export  async function getIndicatingList(query: string, currentPage: number):Promise<indicatingData[]> {
   const noriList = await getIndicatingNoris(query, currentPage);
@@ -113,4 +118,94 @@ const startIndicate = async (nori: nori) => {
     data: {startDate: new Date(format(new Date(),"yyyy-MM-dd"))},
     where: {id: nori.id}
   });
+}
+
+export async function updateIndicateResult(data: z.infer<typeof formSchema>): Promise<errorState> {
+  try{
+    const result = await prisma.detectResult.findUniqueOrThrow({
+      include: {indicator: {include: {combo: {include: {items: true}}}}},
+      where: {noriId_indicatorId: {noriId: data.noriId, indicatorId: data.indicatorId}}
+    });
+
+    const session = await auth();
+    if(!session?.user?.id) return {state: "error", message:"用户未登录，请登录后再操作"};
+
+    const updateData: Prisma.detectResultUncheckedUpdateInput = {};
+    
+    if (data.noDetection && result.result !== "I") {  //设置该指标不检测
+      updateData.result = "I";
+      updateData.inspectDate = new Date(format(new Date(), "yyyy-MM-dd"));
+      updateData.inspectorId = session.user.id;
+
+    } else if(!data.noDetection && result.result === "I") {
+      //指标从不检测变更为检测
+      if (result.indicator.type === "B") {
+        if(data.boolData != null) {
+          updateData.result = "Y";
+          updateData.boolData = data.boolData;
+          updateData.suggestionText = data.suggestionText;
+          updateData.inspectorId = session.user.id;
+          updateData.inspectDate = new Date(format(new Date(), "yyyy-MM-dd"));
+        } else {
+          updateData.result = "N";
+          updateData.boolData = null;
+          updateData.suggestionText = data.suggestionText;
+          updateData.inspectorId = null;
+          updateData.inspectDate = null;
+        }
+      } else if(result.indicator.type === "D") {
+        if(data.numData == null || data.numData.trim() === "" || data.numData === undefined) {
+          updateData.result = "N";
+          updateData.numData = null;
+          updateData.suggestionText = data.suggestionText;
+          updateData.inspectorId = null;
+          updateData.inspectDate = null;
+        } else {
+          updateData.result = "Y";
+          updateData.numData = data.numData;
+          updateData.suggestionText = data.suggestionText;
+          updateData.inspectorId = session.user.id;
+          updateData.inspectDate = new Date(format(new Date(), "yyyy-MM-dd"));
+        }
+      } else if(result.indicator.type === "T") {
+        if(data.stringData == null || data.stringData.trim() === "" || data.stringData === undefined) {
+          updateData.result = "N";
+          updateData.stringData = null;
+          updateData.suggestionText = data.suggestionText;
+          updateData.inspectorId = null;
+          updateData.inspectDate = null;
+        } else {
+          updateData.result = "Y";
+          updateData.stringData = data.stringData;
+          updateData.suggestionText = data.suggestionText;
+          updateData.inspectorId = session.user.id;
+          updateData.inspectDate = new Date(format(new Date(), "yyyy-MM-dd"));
+        }
+      } else if(result.indicator.type === "C") {
+        if(data.comboItemData == null || data.comboItemData === undefined) {
+          updateData.result = "N";
+          updateData.comboItemData = null;
+          updateData.suggestionText = data.suggestionText;
+          updateData.inspectorId = null;
+          updateData.inspectDate = null;
+        } else {
+          if (result.indicator.combo?.items.find(item=>item.id === result.comboItemData)) {
+            updateData.result = "Y";
+            updateData.comboItemData = result.comboItemData;
+            updateData.suggestionText = data.suggestionText;
+            updateData.inspectorId = session.user.id;
+            updateData.inspectDate = new Date(format(new Date(), "yyyy-MM-dd"));
+          } else {
+            return {state: "error", message: "传入的选择项不存在"};
+          }
+        }
+      }
+    } else if() {
+
+    }
+
+    return {state: "success"};
+  } catch (error) {
+    return {state: "error", message: "更新数据时发生异常"}
+  }
 }

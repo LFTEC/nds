@@ -21,7 +21,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { formSchema } from "@/data/center/centerData";
 import { indicatorSchema } from "@/services/indicatorData";
 import { detectResult, combo, comboItem } from "@/generated/prisma";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { errorState } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
@@ -38,27 +38,35 @@ export function EditIndicatorValue({
     combo: (combo & { items: comboItem[] }) | null;
   };
 }) {
-  const data = result;
+  const data = result;  
 
   const form = useForm({
     defaultValues: data,
     resolver: zodResolver(formSchema),
   });
 
+  const watchedData = form.watch();
+
+  const debounceRef = useRef<ReturnType<typeof debounce>>(null);
+  
+  useEffect(()=>{
+    debounceRef.current = debounce(form.handleSubmit(onSubmit), 500);
+    return () => {debounceRef.current?.cancel();}
+  }, []);
+
+  useEffect(()=>{
+    if(form.formState.isDirty) {
+      debounceRef.current?.();
+    }
+  },[watchedData]);
+
+  
+
   const [state, setState] = useState<errorState>({ state: "success" });
   const watchBool = form.watch("noDetection");
-  const onSubmit = async (data: z.infer<typeof formSchema>) => {
-    console.log("我被执行了一次",data.suggestionText);
-  };
-  const debounceSubmit = debounce(onSubmit, 500);
-
-  const changingData = form.watch();
-
-    //return () => subscription.unsubscribe();
- 
-  useEffect(()=>{
-    debounceSubmit(changingData);
-  }, [changingData]);
+  const onSubmit = (data: z.infer<typeof formSchema>) => {
+    
+  };  
 
   return (
     <Form {...form}>
