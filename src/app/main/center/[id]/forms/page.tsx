@@ -1,15 +1,19 @@
-'use client'
+import { getCorrespondingCategories } from "@/services/centerService";
+import { RedirectPage } from "@/ui/center/redirect";
 
-import { useEffect } from "react";
-import { useRouter, usePathname } from "next/navigation";
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const id = (await params).id;
 
-export default function Page({firstPage}: {firstPage: number}){
-  const pathname = usePathname();
-  const router = useRouter();
+  const correspondingCategories = await getCorrespondingCategories(id);
+  correspondingCategories.sort((a, b) => {
+    return a.serialNo - b.serialNo;
+  });
 
-  useEffect(()=>{
-    router.replace(pathname + "/category-" + firstPage);
-  }, []);
 
-  return (<p>正在跳转...</p>);
+
+  return <RedirectPage path={`category-${correspondingCategories[0].categoryId}`} />
 }

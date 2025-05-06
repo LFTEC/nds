@@ -6,29 +6,27 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { allCategoriesWithIndicator } from "@/services/categories";
+import { NavButton } from "@/ui/center/nav-button";
 import { getCorrespondingCategories } from "@/services/centerService";
 import { getNoriDataById } from "@/services/noriService";
-import { redirect } from "next/navigation";
 import Link from "next/link";
 import React from "react";
 
-
 export default async function Layout({
   children,
-  params
+  params,
 }: {
   children: React.ReactNode;
-  params: Promise<{ id: string}>;
+  params: Promise<{ id: string }>;
 }) {
   const id = (await params).id;
   const nori = await getNoriDataById(id);
   const correspondingCategories = await getCorrespondingCategories(id);
-  correspondingCategories.sort((a,b)=>{
-    return (a.serialNo - b.serialNo);
+  correspondingCategories.sort((a, b) => {
+    return a.serialNo - b.serialNo;
   });
 
-  const pathname = `/main/center/${id}/forms/`
+  const pathname = `/main/center/${id}/forms/`;
   // if(!pages) {
   //   redirect(pathname + "/category-" + correspondingCategories[0].categoryId);
   // }
@@ -48,19 +46,16 @@ export default async function Layout({
           <div className="flex flex-col space-y-8 md:flex-row md:space-x-12 md:space-y-0">
             <aside className="-ml-4 lg:w-1/5">
               <nav className="flex space-x-2 lg:flex-col lg:space-x-0 lg:space-y-1">
-                {correspondingCategories.map(cate=>(
-                  <Button key={cate.categoryId} asChild variant="ghost" className="justify-start hover:underline hover:bg-transparent active:bg-gray-100 font-semibold text-base">
-                    <Link href={`${pathname}category-${cate.categoryId}`}>
-                      {cate.categoryName}
-                    </Link>
-                  </Button>
+                {correspondingCategories.map((cate) => (
+                  <NavButton
+                    key={cate.categoryId}
+                    href={`${pathname}category-${cate.categoryId}`}
+                    name={cate.categoryName}
+                  />
                 ))}
               </nav>
             </aside>
-            <div className="flex-1 lg:max-w-2xl">
-              {children}
-            </div>
-            
+            <div className="flex flex-col flex-1 lg:max-w-2xl">{children}</div>
           </div>
         </CardContent>
       </Card>

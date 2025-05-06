@@ -1,7 +1,7 @@
 import { categoryWithIndicators, indicatingData } from "@/data/center/centerData";
 import { getIndicatingNoriById, getIndicatingNoris } from "./noriService";
 import { getAllValidIndicatorQty } from "./indicatorService";
-import { category, detectResult, indicator, nori } from "@/generated/prisma";
+import { category, combo, comboItem, detectResult, indicator, nori } from "@/generated/prisma";
 import { allCategoriesWithIndicator } from "./categories";
 import prisma from "@/lib/prisma";
 import {format} from 'date-fns';
@@ -46,7 +46,7 @@ export async function getCorrespondingCategories(id: string) {
     if(nori.categories.length > 0) {
       const cCates: categoryWithIndicators[] = nori.categories.map(cate=>{
         const results: detectResult[] = [];
-        const indicators: indicator[] = [];
+        const indicators: (indicator & {combo: combo & {items: comboItem[]} | null})[] = [];
 
         nori.detections.forEach(d=>{
           if(d.indicator.categoryId === cate.categoryId) {
@@ -103,7 +103,9 @@ const startIndicate = async (nori: nori) => {
     data: validIndicators.map(indicator=>({
       noriId: nori.id,
       indicatorId: indicator.id,
-      result: 'N'
+      result: 'N',
+      suggestionText: indicator.hasSuggestionText? indicator.suggestionText: null,
+      createDate: new Date(format(new Date(),"yyyy-MM-dd"))
     }))
   });
 

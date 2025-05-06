@@ -62,7 +62,7 @@ model detectResult {
   indicatorId       Int       @map("indicator_id")
   stringData        String?   @db.VarChar(50) @map("data_string")
   numData           Decimal?  @db.Decimal(11, 2) @map("data_num")
-  result            String   @db.VarChar(1) @map("detection_result")
+  result            String    @db.VarChar(1) @map("detection_result")
   binData           Bytes?    @map("data_pic")
   boolData          Boolean?  @map("data_bool")
   suggestionText    String?   @map("suggestion_text")
