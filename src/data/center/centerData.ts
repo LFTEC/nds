@@ -34,6 +34,6 @@ export const formSchema = z.object({
       message: "必须为数字且最多两位小数",
     })
     .nullable(),
-  comboItemData: z.number().nullable(),
+  comboItemData: z.coerce.number().nullable(),
   suggestionText: z.string({ invalid_type_error: "请输入建议文本" }),
 });

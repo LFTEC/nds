@@ -69,7 +69,8 @@ export async function getCorrespondingCategories(id: string) {
       const indicators: (indicator & {
         combo: (combo & { items: comboItem[] }) | null;
       })[] = [];
-
+      
+      nori.detections.sort((a,b)=>a.indicator.serialNo - b.indicator.serialNo);
       nori.detections.forEach((d) => {
         if (d.indicator.categoryId === cate.categoryId) {
           results.push(d);
@@ -242,16 +243,16 @@ export async function updateIndicateResult(
         } else {
           if (
             result.indicator.combo?.items.find(
-              (item) => item.id === result.comboItemData
+              (item) => item.id === data.comboItemData
             )
           ) {
             updateData.result = "Y";
-            updateData.comboItemData = result.comboItemData;
+            updateData.comboItemData = data.comboItemData;
             updateData.suggestionText = data.suggestionText;
             updateData.inspectorId = session.user.id;
             updateData.inspectDate = new Date(format(new Date(), "yyyy-MM-dd"));
           } else {
-            return { state: "error", message: "传入的选择项不存在" };
+            return { state: "error", message: "传入的选择项不存在"  };
           }
         }
       }
