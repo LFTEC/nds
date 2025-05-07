@@ -9,6 +9,7 @@ import {
 import { NavButton } from "@/ui/center/nav-button";
 import { getCorrespondingCategories } from "@/services/centerService";
 import { getNoriDataById } from "@/services/noriService";
+import { SummaryButton } from "@/ui/center/summary-button"; 
 import Link from "next/link";
 import React from "react";
 
@@ -53,6 +54,8 @@ export default async function Layout({
                     name={cate.categoryName}
                   />
                 ))}
+
+                <SummaryButton id={id} />
               </nav>
             </aside>
             <div className="flex flex-col flex-1 lg:max-w-2xl">{children}</div>

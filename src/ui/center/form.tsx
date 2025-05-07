@@ -20,7 +20,7 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { formSchema } from "@/data/center/centerData";
 import { indicatorSchema } from "@/services/indicatorData";
-import { detectResult, combo, comboItem } from "@/generated/prisma";
+import { combo, comboItem } from "@/generated/prisma";
 import { useEffect, useRef, useState } from "react";
 import { errorState } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
@@ -28,6 +28,8 @@ import { Switch } from "@/components/ui/switch";
 import { z } from "zod";
 import { Textarea } from "@/components/ui/textarea";
 import { debounce } from "lodash";
+import { updateIndicateResult } from "@/services/centerService";
+import { toast } from "sonner";
 
 export function EditIndicatorValue({
   result,
@@ -50,32 +52,38 @@ export function EditIndicatorValue({
   const debounceRef = useRef<ReturnType<typeof debounce>>(null);
   
   useEffect(()=>{
-    debounceRef.current = debounce(form.handleSubmit(onSubmit), 500);
+    debounceRef.current = debounce(form.handleSubmit(onSubmit), 1000);
     return () => {debounceRef.current?.cancel();}
   }, []);
 
   useEffect(()=>{
     if(form.formState.isDirty) {
       debounceRef.current?.();
+      console.log("我触发了一次");
     }
   },[watchedData]);
 
   
 
-  const [state, setState] = useState<errorState>({ state: "success" });
-  const watchBool = form.watch("noDetection");
-  const onSubmit = (data: z.infer<typeof formSchema>) => {
-    
+  //const [state, setState] = useState<errorState>({ state: "success" });
+  const onSubmit = async (data: z.infer<typeof formSchema>) => {
+    console.log("我执行了一次");
+    const error = await updateIndicateResult(data);
+    //setState(error);
+
+    if(error.state === "error") {
+      toast("更新检验结果时发生异常", {description: error.message});
+      form.reset();
+    } else {
+      form.reset(data);
+    }
   };  
+
+
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
-        {state.state == "error" && (
-          <div className="text-red-500 font-semibold text-sm">
-            <p>{state.message}</p>
-          </div>
-        )}
 
         <FormField
           control={form.control}
@@ -130,7 +138,7 @@ export function EditIndicatorValue({
                     value={field.value ?? ""}
                     onChange={field.onChange}
                     className="-ml-2"
-                    disabled={watchBool}
+                    disabled={watchedData.noDetection}
                   />
                 </FormControl>
                 <FormMessage />
@@ -157,7 +165,7 @@ export function EditIndicatorValue({
                       value={field.value ?? ""}
                       onChange={field.onChange}
                       className="-ml-2 pr-24"
-                      disabled={watchBool}
+                      disabled={watchedData.noDetection}
                     />
                     <span className="absolute right-5 top-1/2 transform -translate-y-1/2 pointer-events-none text-muted-foreground">
                       {indicator.unit}
@@ -181,7 +189,7 @@ export function EditIndicatorValue({
                   <Select
                     onValueChange={field.onChange}
                     value={field.value?.toString()}
-                    disabled={watchBool}
+                    disabled={watchedData.noDetection}
                   >
                     <FormControl>
                       <SelectTrigger className="w-full -ml-2">
@@ -217,7 +225,7 @@ export function EditIndicatorValue({
                         ? field.onChange(true)
                         : field.onChange(false);
                     }}
-                    disabled={watchBool}
+                    disabled={watchedData.noDetection}
                     className="flex flex-row space-x-5"
                   >
                     <FormItem className="flex items-center space-x-3 space-y-0">
@@ -252,7 +260,7 @@ export function EditIndicatorValue({
                   value={field.value ?? ""}
                   onChange={field.onChange}
                   className="-ml-2 h-[240px]"
-                  disabled={watchBool}
+                  disabled={watchedData.noDetection}
                 />
               </FormControl>
               <FormMessage />

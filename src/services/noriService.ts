@@ -1,5 +1,5 @@
 "use server";
-import { registrySchema, formSchema } from "@/data/registry/registryData";
+import { registrySchema, formSchema, summarySchema } from "@/data/registry/registryData";
 import { nori } from "@/generated/prisma";
 import prisma from "@/lib/prisma";
 import { errorState } from "@/lib/utils";
@@ -227,4 +227,24 @@ export async function getIndicatingNoriById(id: string) {
     },
     where: { id: id },
   });
+}
+
+export async function complete(id: string, data: z.infer<typeof summarySchema>): Promise<errorState> {
+  try{
+    await prisma.nori.update({
+      data: {
+        finishDate: new Date(format(new Date(),"yyyy-MM-dd")),
+        level: data.level,
+        summary: data.summary
+      },
+      where: {id: id}
+    });
+    
+  } catch(error){
+    console.error("完成检验时发生异常", error);
+    return {state: "error", message: "完成检验时发生异常" };
+  }
+
+  revalidatePath("/main/center");
+  redirect("/main/center");
 }

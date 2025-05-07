@@ -6,16 +6,16 @@ import {
   TableBody,
   TableCell,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
 import { indicatingData } from "@/data/center/centerData";
-import { HiOutlineArrowRightStartOnRectangle } from "react-icons/hi2";
-import Link from "next/link";
+import { updateIndicateResult } from "@/services/centerService";
+import { NoriButton } from "./nori-button";
 
 export async function IndicatingTable({
   indicatingList,
 }: {
   indicatingList: indicatingData[];
 }) {
+
   return (
     <Table>
       <TableHeader>
@@ -48,16 +48,7 @@ export async function IndicatingTable({
             </TableCell>
             <TableCell>
               <div className="flex items-center gap-2">
-                <Button
-                  variant="ghost"
-                  className="flex gap-2 items-center border py-1 px-2 rounded-md hover:bg-blue-200 transition-colors"
-                  asChild
-                >
-                  <Link href={`/main/center/${nori.id}/forms`}>
-                    <HiOutlineArrowRightStartOnRectangle className="size-4" />
-                    <span>录入</span>
-                  </Link>
-                </Button>
+                <NoriButton id={nori.id} />
               </div>
             </TableCell>
           </TableRow>
