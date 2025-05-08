@@ -1,5 +1,4 @@
 import { detectCategory, detectResult, indicator, combo, comboItem } from "@/generated/prisma";
-import { Prisma } from "@/generated/prisma";
 import { z } from "zod";
 
 export interface indicatingData {
