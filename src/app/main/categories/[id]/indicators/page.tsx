@@ -7,8 +7,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import IndicatorTable from "@/ui/indicators/table";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
 import { CreateIndicator } from "@/ui/indicators/create-form";
 import { getComboList } from "@/services/comboService";
 

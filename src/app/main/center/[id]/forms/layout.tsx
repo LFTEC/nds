@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -10,7 +9,6 @@ import { NavButton } from "@/ui/center/nav-button";
 import { getCorrespondingCategories } from "@/services/centerService";
 import { getNoriDataById } from "@/services/noriService";
 import { SummaryButton } from "@/ui/center/summary-button"; 
-import Link from "next/link";
 import React from "react";
 
 export default async function Layout({

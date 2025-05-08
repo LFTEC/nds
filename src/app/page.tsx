@@ -2,12 +2,8 @@
 import Image from "next/image";
 import {FaFlask} from "react-icons/fa6";
 import { Button } from "@/components/ui/button";
-import { createTest } from "@/services/index";
 import Link from "next/link";
 
-const create = async () =>{
-  await createTest();
-};
 
 export default function Home() {
 

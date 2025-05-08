@@ -8,12 +8,12 @@ export default async function Page({
 }) {
   const id = (await params).id;
 
-  // const correspondingCategories = await getCorrespondingCategories(id);
-  // correspondingCategories.sort((a, b) => {
-  //   return a.serialNo - b.serialNo;
-  // });
+  const correspondingCategories = await getCorrespondingCategories(id);
+  correspondingCategories.sort((a, b) => {
+    return a.serialNo - b.serialNo;
+  });
 
 
 
-  // return <RedirectPage path={`category-${correspondingCategories[0].categoryId}`} />
+  return <RedirectPage path={`category-${correspondingCategories[0].categoryId}`} />
 }

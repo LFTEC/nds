@@ -1,6 +1,4 @@
-import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
-import Test from "@/lib/registry";
+
 import { NewCard } from "@/ui/categories/new-card";
 import { CategoryCard } from "@/ui/categories/card";
 import { allCategories } from "@/services/categories";
