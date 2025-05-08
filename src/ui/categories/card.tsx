@@ -3,18 +3,17 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { category } from "@/generated/prisma";
+import { category } from "generated/prisma";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { IoEnterOutline } from "react-icons/io5";
 import { HiPencilAlt } from "react-icons/hi";
-import { useState, useActionState } from "react";
+import { useState } from "react";
 import { setInvisible as setCategoryInvisible } from "@/services/categories";
 import { toast } from "sonner";
 import {

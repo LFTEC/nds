@@ -1,7 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { IndicatingTable } from "@/ui/center/table";
 import { getIndicatingList } from "@/services/centerService";
-import { getIndicatingNoriQty } from "@/services/noriService";
+//import { getIndicatingNoriQty } from "@/services/noriService";
 
 
 
@@ -12,7 +12,7 @@ export default async function Page(props: {
   const query = searchParams?.query || "";
   const page = searchParams?.page|| 1;
 
-  const total = await getIndicatingNoriQty(query);
+  //const total = await getIndicatingNoriQty(query);
   const noriList = await getIndicatingList(query, page);
 
   return (

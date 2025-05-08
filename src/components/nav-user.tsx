@@ -4,7 +4,6 @@ import {
   IconCreditCard,
   IconDotsVertical,
   IconLogout,
-  IconNotification,
   IconUserCircle,
 } from "@tabler/icons-react";
 
@@ -37,7 +36,6 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
-import type { User } from "next-auth";
 import { useUser } from "@/ui/main/main-layout";
 import { logout } from "@/lib/login";
 

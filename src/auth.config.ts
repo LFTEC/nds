@@ -1,5 +1,5 @@
 
-import { Session } from "inspector/promises";
+
 import type { NextAuthConfig } from "next-auth";
 
 declare module "next-auth" {
@@ -46,5 +46,6 @@ export const authConfig = {
 
           return token;
         }
-    }
+    },
+    trustHost: true
 } satisfies NextAuthConfig;

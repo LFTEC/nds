@@ -1,9 +1,7 @@
 'use server'
 import prisma from "@/lib/prisma";
-import type { indicator } from "@/generated/prisma";
 import type { errorState } from "@/lib/utils";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 import { indicatorSchema } from "./indicatorData";
 import {z} from 'zod';
 
@@ -17,6 +15,7 @@ export async function getIndicatorById(id: number): Promise<z.infer<typeof indic
     }
   }
   catch (error) {
+    console.error(error);
     throw new Error("查询检验指标时发生异常");
   }
 }
@@ -50,6 +49,7 @@ export async function createIndicator(prevState: errorState, data: z.infer<typeo
     revalidatePath(`/main/categories/${data.categoryId}/indicators`);
     return {state: "success"};
   } catch(error) {
+    console.error(error);
     return {state: "error", message: "创建指标时发生异常"};
   }
 }
@@ -84,6 +84,7 @@ export async function updateIndicator(id: number, prevState: errorState, data: z
     return {state: "success"};
 
   } catch (error){
+    console.error(error);
     return {state: "error", message: "更新指标时发生异常"};
   }
 }
@@ -98,6 +99,7 @@ export async function getAllValidIndicatorQty() {
       where: {noDetection: false}
     });
   } catch (error){
+    console.error(error);
     throw new Error("获取指标总量时发生异常");
   }
 }

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { Prisma } from "@/generated/prisma";
+import { Prisma } from "generated/prisma";
 
 export const indicatorSchema = z.object({
   id: z.coerce.number(),

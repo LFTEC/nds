@@ -1,7 +1,6 @@
 "use client"
 
 import { IconCirclePlusFilled, IconMail, type Icon } from "@tabler/icons-react"
-import {EditNori} from '@/ui/registry/edit-form'
 
 import { Button } from "@/components/ui/button"
 import {

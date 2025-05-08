@@ -10,7 +10,7 @@ import { getCorrespondingCategories } from "@/services/centerService";
 import { EditIndicatorValue } from "@/ui/center/form";
 import {z} from 'zod';
 import { indicatorSchema } from "@/services/indicatorData";
-import { combo, comboItem } from "@/generated/prisma";
+import { combo, comboItem } from "generated/prisma";
 
 
 

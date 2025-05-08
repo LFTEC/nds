@@ -1,6 +1,6 @@
 "use server";
-import { registrySchema, formSchema, summarySchema } from "@/data/registry/registryData";
-import { nori } from "@/generated/prisma";
+import { formSchema, summarySchema } from "@/data/registry/registryData";
+import { nori } from "generated/prisma";
 import prisma from "@/lib/prisma";
 import { errorState } from "@/lib/utils";
 import { revalidatePath } from "next/cache";
@@ -92,7 +92,6 @@ export async function updateNori(
   privState: errorState,
   data: z.infer<typeof formSchema>
 ): Promise<errorState> {
-  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   try {
     if (id) {
       await prisma.nori.update({
@@ -154,14 +153,13 @@ export async function updateNori(
     revalidatePath("/main/registry");
     return { state: "success" };
   } catch (error) {
+    console.error(error);
     return { state: "error", message: "更新紫菜信息时发生异常" };
   }
 }
 
 export async function deleteNori(
-  id: string,
-  prevState: errorState,
-  formData: FormData
+  id: string
 ): Promise<errorState> {
   try {
     await prisma.nori.delete({
@@ -177,10 +175,15 @@ export async function deleteNori(
   }
 }
 
-export async function getIndicatingNoriQty(query: string) {}
+export async function getIndicatingNoriQty(query: string) {
+  /// 需要增加分页逻辑
+  console.log(query);
+}
 
 export async function getIndicatingNoris(query: string, currentPage: number) {
   try {
+    /// 需要增加分页逻辑
+    console.log(currentPage);
     const noriList = await prisma.nori.findMany({
       select: {
         id: true,

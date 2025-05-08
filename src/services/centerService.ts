@@ -11,9 +11,8 @@ import {
   combo,
   comboItem,
   detectResult,
-  indicator,
-  nori,
-} from "@/generated/prisma";
+  indicator
+} from "generated/prisma";
 import { allCategoriesWithIndicator } from "./categories";
 import prisma from "@/lib/prisma";
 import { format } from "date-fns";
@@ -21,7 +20,7 @@ import { z } from "zod";
 import { formSchema } from "@/data/center/centerData";
 import { errorState } from "@/lib/utils";
 import { auth } from "@/auth";
-import { Prisma } from "@/generated/prisma/client";
+import { Prisma } from "generated/prisma/client";
 import { redirect } from "next/navigation";
 
 export async function getIndicatingList(
@@ -270,6 +269,7 @@ export async function updateIndicateResult(
 
     return { state: "success" };
   } catch (error) {
+    console.error(error);
     return { state: "error", message: "更新数据时发生异常" };
   }
 }

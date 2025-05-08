@@ -2,17 +2,15 @@
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { DialogClose } from "@/components/ui/dialog";
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { category } from "@/generated/prisma";
+import { category } from "generated/prisma";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
@@ -48,6 +46,10 @@ export function CategoryForm({
   const [state, formAction] = useActionState(saveCategoryNameWithParam, {
     state: "success",
   });
+
+  if(state.state === "error") {
+    //处理错误
+  }
 
   const [submitting, setSubmitting] = useState(false);
 

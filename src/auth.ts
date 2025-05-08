@@ -15,7 +15,7 @@ export interface CUser extends User {
 async function getUser(username: string): Promise<CUser|undefined> {
     try {
         username = username.toLowerCase().trim();
-        let user = await getUserInfo(username);
+        const user = await getUserInfo(username);
         return user;
     } catch(error) {
         console.error(`用户${username}不存在`, error);
@@ -27,7 +27,7 @@ export const {auth, signIn, signOut} = NextAuth({
     ...authConfig,
     providers: [
         CredentialsProvider({
-            async authorize(credentials, request) {
+            async authorize(credentials) {
                 const parsedCredential = z.object({
                     username: z.string(),
                     password: z.string().min(8)

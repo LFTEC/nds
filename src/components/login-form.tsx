@@ -12,7 +12,7 @@ export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"form">) {
-  const [errorMessage, formAction, isPending] = useActionState(
+  const [errorMessage, formAction] = useActionState(
     authenticate,
     undefined
   );
@@ -20,7 +20,7 @@ export function LoginForm({
   const callbackUrl = searchParams.get("callbackUrl") || "/main";
 
   return (
-    <form className={cn("flex flex-col gap-6", className)} action={formAction}>
+    <form className={cn("flex flex-col gap-6", className, props)} action={formAction}>
       <div className="flex flex-col items-center gap-2 text-center">
         <h1 className="text-2xl font-bold">登录系统</h1>
         <p className="text-muted-foreground text-sm text-balance">

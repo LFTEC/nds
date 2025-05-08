@@ -1,5 +1,5 @@
 import { z } from "zod";
-export type { nori as noriData } from "@/generated/prisma";
+export type { nori as noriData } from "generated/prisma";
 
 export const registrySchema = z.object({
   id: z.string(),

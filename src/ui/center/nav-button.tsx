@@ -5,7 +5,6 @@ import clsx from "clsx";
 import { usePathname } from "next/navigation";
 
 export function NavButton({
-  className,
   href,
   name,
   ...props

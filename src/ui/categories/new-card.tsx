@@ -1,12 +1,7 @@
 'use client'
-import { Button } from "@/components/ui/button";
 import {
   Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
+  CardContent
 } from "@/components/ui/card";
 import { FiPlusCircle } from "react-icons/fi";
 
@@ -15,6 +10,10 @@ import { useActionState } from "react";
 
 export function NewCard() {
   const [state, formAction] = useActionState(createCategory, {state: "success"});
+  if(state.state === "error"){
+    //处理异常
+  }
+
   return (
     <form action={formAction}>
       <button

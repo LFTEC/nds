@@ -1,6 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import  {RegistryTable} from "@/ui/registry/table";
-import { getNoriListByFilter, getTotalPages } from "@/services/noriService";
+import { getNoriListByFilter } from "@/services/noriService";
 import { noriData } from "@/data/registry/registryData";
 import { EditNori } from "@/ui/registry/edit-form";
 
@@ -11,7 +11,7 @@ export default async function Page(props: {
   const query = searchParams?.query || "";
   const page = searchParams?.page|| 1;
 
-  const total = await getTotalPages(query);
+  //const total = await getTotalPages(query);
   const noriList: noriData[] = await getNoriListByFilter(query, page);
 
   return (

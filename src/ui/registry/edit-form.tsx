@@ -30,7 +30,6 @@ import { HiOutlineCalendarDays } from "react-icons/hi2";
 
 import {
   noriData,
-  registrySchema,
   formSchema,
 } from "@/data/registry/registryData";
 import { useForm } from "react-hook-form";
@@ -40,13 +39,12 @@ import { useState } from "react";
 import { cn, errorState } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { getNoriDataById, updateNori } from "@/services/noriService";
+import { updateNori } from "@/services/noriService";
 
 export function EditNori({
   noriData,
   behavior,
-  className,
-  ...props
+  className
 }: React.ComponentProps<"button"> & {
   noriData?: noriData;
   behavior: "create" | "edit";
@@ -62,7 +60,7 @@ export function EditNori({
       maritime: null,
     };
   } else {
-    let parsedNori = formSchema.parse(noriData);
+    const parsedNori = formSchema.parse(noriData);
     parsedData = parsedNori;
   }
 

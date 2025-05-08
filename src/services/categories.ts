@@ -1,6 +1,6 @@
 "use server";
 import prisma from "@/lib/prisma";
-import { category } from "@/generated/prisma";
+import { category } from "generated/prisma";
 import { errorState } from "@/lib/utils";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
@@ -59,6 +59,7 @@ export async function setInvisible({
     });
     return { state: "success" };
   } catch (error) {
+    console.error(error);
     return { state: "error", message: `设置类别${id}时发生故障，请稍后再试` };
   }
 }
@@ -69,7 +70,7 @@ export async function saveCategoryName(
   formData: FormData
 ): Promise<errorState> {
   try {
-    const cate = await prisma.category.findUniqueOrThrow({ where: { id: id } });
+    await prisma.category.findUniqueOrThrow({ where: { id: id } });
     const { name, description } = formSchema.parse({
       name: formData.get("name"),
       description: formData.get("description"),
@@ -86,6 +87,7 @@ export async function saveCategoryName(
     revalidatePath("/main/categories");
     redirect("/main/categories");
   } catch (error) {
+    console.error(error);
     return { state: "error", message: "更新类别信息发生故障，请稍后再试" };
   }
 }
@@ -94,14 +96,15 @@ export async function createCategory(
   prevState: errorState
 ): Promise<errorState> {
   try {
-    let maxSerialNo = await prisma.category.aggregate({
+    const maxSerialNo = await prisma.category.aggregate({
       _max: { serialNo: true },
     });
     let maxNo = 1000;
     if ((maxSerialNo._max.serialNo ?? 0) >= 1000) {
       maxNo = (maxSerialNo._max.serialNo ?? 0) + 1;
     }
-
+    
+    console.log(prevState);
     await prisma.category.create({
       data: {
         invisible: true,
@@ -114,6 +117,7 @@ export async function createCategory(
     revalidatePath("/main/categories");
     redirect("/main/categories");
   } catch (error) {
+    console.error(error);
     return { state: "error", message: "创建检测类别时发生故障，请稍后再试" };
   }
 }

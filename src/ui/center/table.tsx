@@ -7,7 +7,6 @@ import {
   TableCell,
 } from "@/components/ui/table";
 import { indicatingData } from "@/data/center/centerData";
-import { updateIndicateResult } from "@/services/centerService";
 import { NoriButton } from "./nori-button";
 
 export async function IndicatingTable({

@@ -31,8 +31,7 @@ import { useForm } from "react-hook-form";
 import { getIndicatorById, updateIndicator } from "@/services/indicatorService";
 import { HiOutlinePencil } from "react-icons/hi2";
 import { indicatorSchema } from "@/services/indicatorData";
-import { useEffect, useState } from "react";
-import { indicator } from "@/generated/prisma";
+import { useState } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
@@ -170,7 +169,7 @@ export function EditIndicator({
           const result = await getIndicatorById(id);
           result.noDetection = !result.noDetection;
           setIndicator(result);
-          let parsed = formSchema.safeParse(result);
+          const parsed = formSchema.safeParse(result);
           if (parsed.success) form.reset(parsed.data);
         }
       }}

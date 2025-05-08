@@ -6,7 +6,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { indicator } from "@/generated/prisma";
+import { indicator } from "generated/prisma";
 import { EditIndicator } from "./edit-form";
 import clsx from "clsx";
 import { HiOutlineXMark, HiOutlineCheck } from "react-icons/hi2";

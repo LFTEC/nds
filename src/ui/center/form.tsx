@@ -20,9 +20,8 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { formSchema } from "@/data/center/centerData";
 import { indicatorSchema } from "@/services/indicatorData";
-import { combo, comboItem } from "@/generated/prisma";
-import { useEffect, useRef, useState } from "react";
-import { errorState } from "@/lib/utils";
+import { combo, comboItem } from "generated/prisma";
+import { useEffect, useRef } from "react";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { z } from "zod";
@@ -182,7 +181,6 @@ export function EditIndicatorValue({
             control={form.control}
             name="comboItemData"
             render={({ field }) => {
-              indicator;
               return (
                 <FormItem className="mt-5">
                   <FormLabel>检测值</FormLabel>
@@ -221,9 +219,7 @@ export function EditIndicatorValue({
                   <RadioGroup
                     value={field.value ? "true" : "false"}
                     onValueChange={(e) => {
-                      e === "true"
-                        ? field.onChange(true)
-                        : field.onChange(false);
+                      field.onChange(e==="true"?true:false);
                     }}
                     disabled={watchedData.noDetection}
                     className="flex flex-row space-x-5"
