@@ -21,8 +21,8 @@ ENV NODE_ENV=production
 RUN addgroup --system --gid 1001 nds 
 RUN adduser --system --uid 1001 nds 
 COPY --from=builder /app/public ./public
-COPY --from=build --chown=nds:nds /app/.next/standalone ./
-COPY --from=build --chown=nds:nds /app/.next/static ./.next/static
+COPY --from=builder --chown=nds:nds /app/.next/standalone ./
+COPY --from=builder --chown=nds:nds /app/.next/static ./.next/static
 USER nds
 EXPOSE 9000
 ENV PORT=9000
