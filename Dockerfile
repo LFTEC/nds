@@ -22,6 +22,7 @@ ENV NODE_ENV=production
 RUN addgroup --system --gid 1001 nds 
 RUN adduser --system --uid 1001 nds 
 COPY --from=builder /app/public ./public
+COPY --from=builder /app/node_modules/prisma ./prisma
 COPY --from=builder --chown=nds:nds /app/.next/standalone ./
 COPY --from=builder --chown=nds:nds /app/.next/static ./.next/static
 USER nds
