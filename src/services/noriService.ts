@@ -11,28 +11,33 @@ import { redirect } from "next/navigation";
 
 export async function getTotalPages(query: string) {
   try {
-    const result = await prisma.nori.count({
-      where: {
-        OR: [
-          {
-            batchNo: { startsWith: query },
-          },
-          {
-            vendor: { startsWith: query },
-          },
-          {
-            exhibitionId: { startsWith: query },
-          },
-          {
-            maritime: { startsWith: query },
-          },
-          {
-            boxQuantity: { gte: Number(query) },
-          },
-        ],
-        startDate: { not: null },
-      },
-    });
+    const result = await prisma.$queryRaw<nori[]>`
+      SELECT count(*) FROM t_nori_info
+      WHERE batch_no ILIKE ${`%${query}%`}
+    `;
+
+    // const result = await prisma.nori.count({
+    //   where: {
+    //     OR: [
+    //       {
+    //         batchNo: { contains: query },
+    //       },
+    //       {
+    //         vendor: { contains: query },
+    //       },
+    //       {
+    //         exhibitionId: { contains: query },
+    //       },
+    //       {
+    //         maritime: { contains: query },
+    //       },
+    //       {
+    //         boxQuantity: { gte: parseFloat(query) },
+    //       },
+    //     ],
+    //     startDate: { not: null },
+    //   },
+    // });
 
     return result;
   } catch (error) {
@@ -44,33 +49,45 @@ export async function getTotalPages(query: string) {
 export async function getNoriListByFilter(
   query: string,
   currentPage: number
-): Promise<nori[]> {
+) {
   try {
     const noriList = await prisma.nori.findMany({
       where: {
-        OR: [
-          {
-            batchNo: { startsWith: query },
-          },
-          {
-            vendor: { startsWith: query },
-          },
-          {
-            exhibitionId: { startsWith: query },
-          },
-          {
-            maritime: { startsWith: query },
-          },
-          {
-            boxQuantity: { gte: Number(query) },
-          },
-        ],
+
+            // sExhibitionDate: {contains: query},
+        
         startDate: null,
       },
       skip: (currentPage - 1) * 20,
       take: 20,
       orderBy: [{ batchNo: "asc" }],
     });
+
+    // const noriList = await prisma.nori.findMany({
+    //   where: {
+    //     OR: [
+    //       {
+    //         batchNo: { startsWith: query },
+    //       },
+    //       {
+    //         vendor: { startsWith: query },
+    //       },
+    //       {
+    //         exhibitionId: { startsWith: query },
+    //       },
+    //       {
+    //         maritime: { startsWith: query },
+    //       },
+    //       {
+    //         boxQuantity: { gte: Number(query) },
+    //       },
+    //     ],
+    //     startDate: null,
+    //   },
+    //   skip: (currentPage - 1) * 20,
+    //   take: 20,
+    //   orderBy: [{ batchNo: "asc" }],
+    // });
 
     return noriList;
   } catch (error) {

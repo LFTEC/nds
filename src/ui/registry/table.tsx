@@ -16,14 +16,16 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { noriData } from "@/data/registry/registryData";
+import { getNoriListByFilter } from "@/services/noriService";
 import { EditNori } from "./edit-form";
 import { HiOutlineTrash } from "react-icons/hi2";
 import { Button } from "@/components/ui/button";
+import { format } from "date-fns";
 import DeleteNori from "./buttons";
 
-export async function RegistryTable({ noriList }: { noriList: noriData[] }) {
-
+export async function RegistryTable({ query, currentPage }: { query: string; currentPage: number }) {
+  const noriList = await getNoriListByFilter(query,currentPage);
+  console.log(noriList);
   return (
     <Table>
       <TableHeader>
@@ -45,15 +47,16 @@ export async function RegistryTable({ noriList }: { noriList: noriData[] }) {
             <TableCell>{nori.batchNo}</TableCell>
             <TableCell>{nori.vendor}</TableCell>
             <TableCell>
-              {nori.exhibitionDate.toISOString().split("T")[0]}
+              {nori.exhibitionDate.toString()}
+              {/* {format(nori.exhibitionDate,"yyyy-MM-dd")} */}
             </TableCell>
             <TableCell>{nori.exhibitionId}</TableCell>
             <TableCell>
-              {nori.productionDate?.toISOString().split("T")[0]}
+              {/* {format(nori.productionDate?? "", "yyyy-MM-dd")} */}
             </TableCell>
             <TableCell>{nori.maritime}</TableCell>
             <TableCell>{nori.boxQuantity}</TableCell>
-            <TableCell>{nori.createDate.toISOString().split("T")[0]}</TableCell>
+            {/* <TableCell>{format(nori.createDate, "yyyy-MM-dd")}</TableCell> */}
             <TableCell>
               <div className="flex items-center gap-2">
                 <EditNori noriData={nori} behavior="edit" />

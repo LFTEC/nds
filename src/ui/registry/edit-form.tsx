@@ -88,7 +88,7 @@ export function EditNori({
     >
       <DialogTrigger asChild>
         {behavior === "create" ? (
-          <Button className={cn("mx-2 my-2 font-semibold", className)}>
+          <Button className={cn("font-semibold", className)}>
             创建待检记录
           </Button>
         ) : (
