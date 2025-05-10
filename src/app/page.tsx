@@ -2,11 +2,8 @@
 import Image from "next/image";
 import {FaFlask} from "react-icons/fa6";
 import { Button } from "@/components/ui/button";
-import { createTest } from "@/services/index";
+import Link from "next/link";
 
-const create = async () =>{
-  await createTest();
-};
 
 export default function Home() {
 
@@ -36,9 +33,9 @@ export default function Home() {
               Provide a network for all your needs with ease and fun using
               LaslesVPN discover interesting features from us.
             </p>
-            <Button type="button" 
-              className="tracking-normal mt-6 py-6 lg:py-4 h-14 px-12 lg:px-16 text-white font-semibold rounded-lg text-base hover: shadow-blue-300 hover:shadow-xl transition-all outline-none cursor-pointer">
-                进入系统
+            <Button type="button" asChild 
+              className="tracking-normal mt-6 py-6 lg:py-4 h-12 px-12 lg:px-16 text-white font-semibold rounded-lg text-base hover: shadow-blue-300 hover:shadow-xl transition-all outline-none cursor-pointer">
+                <Link href="/main">进入系统</Link>
             </Button>
           </div>
           <div className="flex w-full">
