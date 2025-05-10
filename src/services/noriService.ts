@@ -36,7 +36,7 @@ export async function getTotalPages(query: string) {
   try {
     query = query.replaceAll("*", "%");
 
-    const result = await prisma.$queryRaw<{ count: BigInt }[]>`
+    const result = await prisma.$queryRaw<{ count: bigint }[]>`
       SELECT count(*) FROM t_nori_info
       WHERE detection_date is null
       and (batch_no ILIKE ${`%${query}%`}
@@ -198,7 +198,7 @@ export async function deleteNori(id: string): Promise<errorState> {
 export async function getIndicatingNoriPages(query: string) {
   query = query.replaceAll('*', '%');
 
-  const result = await prisma.$queryRaw<{ count: BigInt }[]>`
+  const result = await prisma.$queryRaw<{ count: bigint }[]>`
     select count(*)
     from t_nori_info
     where complete_date is null
@@ -229,6 +229,8 @@ export async function getIndicatingNoris(query: string, currentPage: number) {
       or exhibition_id ILIKE ${`%${query}%`}
       or detection_date::text ILIKE ${`%${query}%`}
     )
+    order by batch_no
+    limit 20 offset ${(currentPage - 1) * 20}
   `;
 
     const noriList = Promise.all(

@@ -6,7 +6,6 @@ import {
   TableBody,
   TableCell,
 } from "@/components/ui/table";
-import { indicatingData } from "@/data/center/centerData";
 import { NoriButton } from "./nori-button";
 import { getIndicatingList } from "@/services/centerService";
 
