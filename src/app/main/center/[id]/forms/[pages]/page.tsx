@@ -53,7 +53,7 @@ export default async function Page(props: {
             combo: ind.combo,
             ...indicatorSchema.parse(ind)
           };
-
+          
           return (
             <Card key={r.indicatorId}>
               <CardHeader>

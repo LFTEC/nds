@@ -1,9 +1,9 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import  {RegistryTable} from "@/ui/registry/table";
-import { getTotalPages, getNoriListByFilter } from "@/services/noriService";
-import { noriData } from "@/data/registry/registryData";
+import { getTotalPages } from "@/services/noriService";
 import { EditNori } from "@/ui/registry/edit-form";
 import { SearchInput } from "@/ui/search-box";
+import { PaginationBox } from "@/ui/pagination";
 
 export default async function Page(props: {
   searchParams?: Promise<{ query?: string; page?: number }>;
@@ -11,6 +11,8 @@ export default async function Page(props: {
   const searchParams = await props.searchParams;
   const query = searchParams?.query || "";
   const page = searchParams?.page|| 1;
+
+  const totalPages = await getTotalPages(query);
 
   return (
     <div className="flex grow gap-4 py-4 md:gap-6 md:py-6 px-4 lg:px-6">
@@ -26,6 +28,7 @@ export default async function Page(props: {
             <EditNori behavior="create" />
           </div>
           <RegistryTable query={query} currentPage={page} />
+          <PaginationBox totalPages={totalPages} />
         </CardContent>
       </Card>
     </div>

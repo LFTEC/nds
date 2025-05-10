@@ -25,7 +25,7 @@ import DeleteNori from "./buttons";
 
 export async function RegistryTable({ query, currentPage }: { query: string; currentPage: number }) {
   const noriList = await getNoriListByFilter(query,currentPage);
-  console.log(noriList);
+
   return (
     <Table>
       <TableHeader>
@@ -47,16 +47,15 @@ export async function RegistryTable({ query, currentPage }: { query: string; cur
             <TableCell>{nori.batchNo}</TableCell>
             <TableCell>{nori.vendor}</TableCell>
             <TableCell>
-              {nori.exhibitionDate.toString()}
-              {/* {format(nori.exhibitionDate,"yyyy-MM-dd")} */}
+              {format(nori.exhibitionDate,"yyyy-MM-dd")}
             </TableCell>
             <TableCell>{nori.exhibitionId}</TableCell>
             <TableCell>
-              {/* {format(nori.productionDate?? "", "yyyy-MM-dd")} */}
+              {format(nori.productionDate?? "", "yyyy-MM-dd")}
             </TableCell>
             <TableCell>{nori.maritime}</TableCell>
             <TableCell>{nori.boxQuantity}</TableCell>
-            {/* <TableCell>{format(nori.createDate, "yyyy-MM-dd")}</TableCell> */}
+            <TableCell>{format(nori.createDate, "yyyy-MM-dd")}</TableCell>
             <TableCell>
               <div className="flex items-center gap-2">
                 <EditNori noriData={nori} behavior="edit" />

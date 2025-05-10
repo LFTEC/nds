@@ -36,7 +36,7 @@ export function SearchInput(props: React.ComponentProps<"input">) {
     <div className="flex flex-1 shrink-0 relative">
       <Label htmlFor="search" className="sr-only">查询条件</Label>
       <input
-        className={cn("block peer w-full rounded-md border border-gray-200 pl-10 text-sm outline-2 placeholder:text-gray-500", props.className)}
+        className={cn("block peer w-full rounded-md border border-gray-200 pl-10 py-2 text-sm outline-2 placeholder:text-gray-500", props.className)}
         onChange={(e)=>{debounceSubmit.current?.(e.target.value)}}        
         defaultValue={searchParams.get('query')?.toString()}
         {...props}

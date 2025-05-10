@@ -9,85 +9,90 @@ import { auth } from "@/auth";
 import { format } from "date-fns";
 import { redirect } from "next/navigation";
 
+interface registryDataType {
+  nori_id: string;
+  vendor: string;
+  exhibition_date: Date;
+  exhibition_id: string;
+  production_date: Date | null;
+  maritime: string | null;
+  box_quantity: number | null;
+  batch_no: string;
+  create_date: Date;
+  user_id: string;
+}
+
+interface indicatingDataType {
+  nori_id: string;
+  vendor: string;
+  exhibition_date: Date;
+  exhibition_id: string;
+  batch_no: string;
+  detection_date: Date;
+  complete_date: Date;
+}
+
 export async function getTotalPages(query: string) {
   try {
-    const result = await prisma.$queryRaw<nori[]>`
+    query = query.replaceAll("*", "%");
+
+    const result = await prisma.$queryRaw<{ count: BigInt }[]>`
       SELECT count(*) FROM t_nori_info
-      WHERE batch_no ILIKE ${`%${query}%`}
+      WHERE detection_date is null
+      and (batch_no ILIKE ${`%${query}%`}
+      or vendor ILIKE ${`%${query}%`}
+      or exhibition_date::text ILIKE ${`%${query}%`}
+      or exhibition_id ILIKE ${`%${query}%`}
+      or production_date::text ILIKE ${`%${query}%`}
+      or maritime ILIKE ${`%${query}%`}
+      or box_quantity::text ILIKE ${`%${query}%`}
+      or create_date::text ILIKE ${`%${query}%`}
+      )
     `;
 
-    // const result = await prisma.nori.count({
-    //   where: {
-    //     OR: [
-    //       {
-    //         batchNo: { contains: query },
-    //       },
-    //       {
-    //         vendor: { contains: query },
-    //       },
-    //       {
-    //         exhibitionId: { contains: query },
-    //       },
-    //       {
-    //         maritime: { contains: query },
-    //       },
-    //       {
-    //         boxQuantity: { gte: parseFloat(query) },
-    //       },
-    //     ],
-    //     startDate: { not: null },
-    //   },
-    // });
-
-    return result;
+    return Math.ceil(Number(result[0].count) / 20);
   } catch (error) {
-    console.error("查询紫菜清单总行数时发生异常", error);
-    throw new Error("查询紫菜清单总行数时发生异常");
+    console.error("查询紫菜清单时发生异常", error);
+    throw new Error("查询紫菜清单时发生异常");
   }
 }
 
-export async function getNoriListByFilter(
-  query: string,
-  currentPage: number
-) {
+export async function getNoriListByFilter(query: string, currentPage: number) {
   try {
-    const noriList = await prisma.nori.findMany({
-      where: {
+    query = query.replaceAll("*", "%");
 
-            // sExhibitionDate: {contains: query},
-        
-        startDate: null,
-      },
-      skip: (currentPage - 1) * 20,
-      take: 20,
-      orderBy: [{ batchNo: "asc" }],
-    });
+    const result = await prisma.$queryRaw<registryDataType[]>`
+      SELECT * FROM t_nori_info
+      WHERE detection_date is null
+      and (batch_no ILIKE ${`%${query}%`}
+      or vendor ILIKE ${`%${query}%`}
+      or exhibition_date::text ILIKE ${`%${query}%`}
+      or exhibition_id ILIKE ${`%${query}%`}
+      or production_date::text ILIKE ${`%${query}%`}
+      or maritime ILIKE ${`%${query}%`}
+      or box_quantity::text ILIKE ${`%${query}%`}
+      or create_date::text ILIKE ${`%${query}%`}
+      )
+      order by batch_no
+      limit 20 offset ${(currentPage - 1) * 20}
+    `;
 
-    // const noriList = await prisma.nori.findMany({
-    //   where: {
-    //     OR: [
-    //       {
-    //         batchNo: { startsWith: query },
-    //       },
-    //       {
-    //         vendor: { startsWith: query },
-    //       },
-    //       {
-    //         exhibitionId: { startsWith: query },
-    //       },
-    //       {
-    //         maritime: { startsWith: query },
-    //       },
-    //       {
-    //         boxQuantity: { gte: Number(query) },
-    //       },
-    //     ],
-    //     startDate: null,
-    //   },
-    //   skip: (currentPage - 1) * 20,
-    //   take: 20,
-    //   orderBy: [{ batchNo: "asc" }],
-    // });
+    const noriList = result.map<nori>((r) => ({
+      id: r.nori_id,
+      vendor: r.vendor,
+      exhibitionDate: r.exhibition_date,
+      exhibitionId: r.exhibition_id,
+      productionDate: r.production_date,
+      maritime: r.maritime,
+      boxQuantity: r.box_quantity,
+      batchNo: r.batch_no,
+      createDate: r.create_date,
+      creatorId: r.user_id,
+      finishDate: null,
+      level: null,
+      startDate: null,
+      summary: null,
+    }));
 
     return noriList;
   } catch (error) {
@@ -175,9 +180,7 @@ export async function updateNori(
   }
 }
 
-export async function deleteNori(
-  id: string
-): Promise<errorState> {
+export async function deleteNori(id: string): Promise<errorState> {
   try {
     await prisma.nori.delete({
       where: { id: id },
@@ -192,41 +195,88 @@ export async function deleteNori(
   }
 }
 
-export async function getIndicatingNoriQty(query: string) {
-  /// 需要增加分页逻辑
-  console.log(query);
+export async function getIndicatingNoriPages(query: string) {
+  query = query.replaceAll('*', '%');
+
+  const result = await prisma.$queryRaw<{ count: BigInt }[]>`
+    select count(*)
+    from t_nori_info
+    where complete_date is null
+    and (
+      batch_no ILIKE ${`%${query}%`}
+      or vendor ILIKE ${`%${query}%`}
+      or exhibition_date::text ILIKE ${`%${query}%`}
+      or exhibition_id ILIKE ${`%${query}%`}
+      or detection_date::text ILIKE ${`%${query}%`}
+    )
+  `;
+
+  return Math.ceil(Number(result[0].count) / 20);
 }
 
 export async function getIndicatingNoris(query: string, currentPage: number) {
   try {
-    /// 需要增加分页逻辑
-    console.log(currentPage);
-    const noriList = await prisma.nori.findMany({
-      select: {
-        id: true,
-        batchNo: true,
-        vendor: true,
-        exhibitionDate: true,
-        exhibitionId: true,
-        startDate: true,
-        finishDate: true,
-        detections: true,
-      },
-      where: {
-        finishDate: null,
-        OR: [
-          {
-            batchNo: { startsWith: query },
+    query = query.replaceAll('*','%');
+
+    const result = await prisma.$queryRaw<indicatingDataType[]>`
+    select nori_id, vendor, exhibition_date, exhibition_id, batch_no, detection_date, complete_date
+    from t_nori_info
+    where complete_date is null
+    and (
+      batch_no ILIKE ${`%${query}%`}
+      or vendor ILIKE ${`%${query}%`}
+      or exhibition_date::text ILIKE ${`%${query}%`}
+      or exhibition_id ILIKE ${`%${query}%`}
+      or detection_date::text ILIKE ${`%${query}%`}
+    )
+  `;
+
+    const noriList = Promise.all(
+      result.map(async (nori) => {
+        const detections = await prisma.detectResult.findMany({
+          where: {
+            noriId: nori.nori_id,
           },
-          {
-            vendor: { startsWith: query },
-          },
-          {
-            exhibitionId: { startsWith: query },
-          },
-        ],
-      },
-    });
+        });
+
+        return {
+          id: nori.nori_id,
+          batchNo: nori.batch_no,
+          vendor: nori.vendor,
+          exhibitionDate: nori.exhibition_date,
+          exhibitionId: nori.exhibition_id,
+          startDate: nori.detection_date,
+          finishDate: nori.complete_date,
+          detections: detections,
+        };
+      })
+    );
+    // const noriList = await prisma.nori.findMany({
+    //   select: {
+    //     id: true,
+    //     batchNo: true,
+    //     vendor: true,
+    //     exhibitionDate: true,
+    //     exhibitionId: true,
+    //     startDate: true,
+    //     finishDate: true,
+    //     detections: true,
+    //   },
+    //   where: {
+    //     finishDate: null,
+    //     OR: [
+    //       {
+    //         batchNo: { startsWith: query },
+    //       },
+    //       {
+    //         vendor: { startsWith: query },
+    //       },
+    //       {
+    //         exhibitionId: { startsWith: query },
+    //       },
+    //     ],
+    //   },
+    // });
 
     return noriList;
   } catch (error) {
@@ -249,20 +299,22 @@ export async function getIndicatingNoriById(id: string) {
   });
 }
 
-export async function complete(id: string, data: z.infer<typeof summarySchema>): Promise<errorState> {
-  try{
+export async function complete(
+  id: string,
+  data: z.infer<typeof summarySchema>
+): Promise<errorState> {
+  try {
     await prisma.nori.update({
       data: {
-        finishDate: new Date(format(new Date(),"yyyy-MM-dd")),
+        finishDate: new Date(format(new Date(), "yyyy-MM-dd")),
         level: data.level,
-        summary: data.summary
+        summary: data.summary,
       },
-      where: {id: id}
+      where: { id: id },
     });
-    
-  } catch(error){
+  } catch (error) {
     console.error("完成检验时发生异常", error);
-    return {state: "error", message: "完成检验时发生异常" };
+    return { state: "error", message: "完成检验时发生异常" };
   }
 
   revalidatePath("/main/center");

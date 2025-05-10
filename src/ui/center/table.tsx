@@ -8,13 +8,16 @@ import {
 } from "@/components/ui/table";
 import { indicatingData } from "@/data/center/centerData";
 import { NoriButton } from "./nori-button";
+import { getIndicatingList } from "@/services/centerService";
 
 export async function IndicatingTable({
-  indicatingList,
+  query,
+  currentPage
 }: {
-  indicatingList: indicatingData[];
+  query: string;
+  currentPage: number
 }) {
-
+  const indicatingList = await getIndicatingList(query, currentPage);
   return (
     <Table>
       <TableHeader>

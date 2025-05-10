@@ -95,7 +95,6 @@ model nori {
   finishDate      DateTime? @db.Date @map("complete_date")
   level           String?   @db.VarChar(10)
   summary         String?   
-  sExhibitionDate String?    @map("exhibition_date::text")
 
   creator         user      @relation(fields: [creatorId], references: [id], onUpdate: NoAction, onDelete: NoAction)
 
