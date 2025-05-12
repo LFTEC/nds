@@ -58,7 +58,6 @@ export function EditIndicatorValue({
   useEffect(()=>{
     if(form.formState.isDirty) {
       debounceRef.current?.();
-      console.log("我触发了一次");
     }
   },[watchedData]);
 
@@ -66,7 +65,7 @@ export function EditIndicatorValue({
 
   //const [state, setState] = useState<errorState>({ state: "success" });
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
-    console.log("我执行了一次");
+
     const error = await updateIndicateResult(data);
     //setState(error);
 
