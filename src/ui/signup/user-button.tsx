@@ -24,6 +24,14 @@ import { HiOutlinePencil } from "react-icons/hi";
 import { HiOutlineKey } from "react-icons/hi";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
+import { updateUser, hash, getUserInfoById } from "@/services/userService";
+import { useEffect } from "react";
+
+const userInfoSchema = z.object({
+  username: z.string().min(8, { message: "请录入用户名，用户名长度为8-16位" }).max(16, {message: "请录入用户名，用户名长度为8-16位"}),
+  name: z.string().min(1, { message: "请录入姓名" }),
+  email: z.string().email("请录入正确的邮箱"),
+});
 
 export function UserButton({
   behavior,
@@ -33,6 +41,33 @@ export function UserButton({
   behavior: "create" | "edit";
   id?: string;
 }) {
+  const form = useForm<z.infer<typeof userInfoSchema>>({
+    defaultValues: {
+      username: "",
+      email: "",
+      name: "",
+    },
+    resolver: zodResolver(userInfoSchema),
+  });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (behavior === "edit" && id) {
+        const user = await getUserInfoById(id);
+        form.reset({
+          name: user.name,
+          username: user.username,
+          email: user.email,
+        });
+      }
+    };
+    fetchData();
+  }, [form.reset]);
+
+  const onSubmit = async (data: z.infer<typeof userInfoSchema>) => {
+
+  }
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -48,6 +83,60 @@ export function UserButton({
           </Button>
         )}
       </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>编辑检验员信息</DialogTitle>
+          <DialogDescription>编辑检验员信息</DialogDescription>
+        </DialogHeader>
+
+        <Form {...form}>
+          <form className="space-y-5">
+            <FormField
+              control={form.control}
+              name="username"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>用户名</FormLabel>
+                  <FormControl>
+                    <Input placeholder="请输入用户名" disabled={behavior==="edit"} {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>姓名</FormLabel>
+                  <FormControl>
+                    <Input placeholder="请输入姓名" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>邮箱</FormLabel>
+                  <FormControl>
+                    <Input placeholder="请输入邮箱" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </form>
+        </Form>
+
+        <DialogFooter>
+          <Button className="px-16 mt-5" onClick={form.handleSubmit(onSubmit)}>保存</Button>
+        </DialogFooter>
+      </DialogContent>
     </Dialog>
   );
 }
@@ -81,13 +170,24 @@ const passwordSchema = z
   });
 
 export function PasswordButton({
+  id,
   ...props
-}: React.ComponentProps<typeof Button>) {
+}: React.ComponentProps<typeof Button> & { id: string }) {
   const form = useForm<z.infer<typeof passwordSchema>>({
+    defaultValues: {
+      password: "",
+      repeat: "",
+    },
     resolver: zodResolver(passwordSchema),
   });
 
-  const onSubmit = async (data: z.infer<typeof passwordSchema>) => {};
+  const onSubmit = async (data: z.infer<typeof passwordSchema>) => {
+    const hashedPassword = await hash(data.password);
+
+    await updateUser(id, {
+      password: hashedPassword,
+    });
+  };
 
   return (
     <Dialog>
@@ -117,8 +217,13 @@ export function PasswordButton({
                 <FormItem>
                   <FormLabel>密码</FormLabel>
                   <FormControl>
-                    <Input placeholder="请输入密码" {...field} />
+                    <Input
+                      type="password"
+                      placeholder="请输入密码"
+                      {...field}
+                    />
                   </FormControl>
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -129,14 +234,23 @@ export function PasswordButton({
                 <FormItem>
                   <FormLabel>重复</FormLabel>
                   <FormControl>
-                    <Input placeholder="请再输入一次" {...field} />
+                    <Input
+                      type="password"
+                      placeholder="请再输入一次"
+                      {...field}
+                    />
                   </FormControl>
+                  <FormMessage />
                 </FormItem>
               )}
             />
           </form>
         </Form>
-        <DialogFooter></DialogFooter>
+        <DialogFooter>
+          <Button className="mt-5 px-16" onClick={form.handleSubmit(onSubmit)}>
+            保存
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

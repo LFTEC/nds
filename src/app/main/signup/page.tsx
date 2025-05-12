@@ -37,7 +37,6 @@ export default async function Page({
           <p className="border-b" />
           <div className="flex gap-4 mx-2 my-2">
             <SearchInput placeholder="查询用户信息" />
-            {/* <EditNori behavior="create" /> */}
             <UserButton behavior="create" />
           </div>
           <Table>
@@ -55,7 +54,7 @@ export default async function Page({
                   <TableCell>{user.username}</TableCell>
                   <TableCell>{user.name}</TableCell>
                   <TableCell>{user.email}</TableCell>
-                  <TableCell><div className="flex items-center gap-2"><UserButton behavior="edit" /><PasswordButton/> </div></TableCell>
+                  <TableCell><div className="flex items-center gap-2"><UserButton id={user.id} behavior="edit" /><PasswordButton id={user.id}/> </div></TableCell>
                 </TableRow>
               ))}
             </TableBody>

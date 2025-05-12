@@ -1,11 +1,23 @@
+'use server'
 import prisma from "@/lib/prisma";
 import { Prisma } from "generated/prisma/client";
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+import bcrypt from "bcrypt";
 
 export async function getUserInfo(username: string) {
   return await prisma.user.findFirstOrThrow({
     where: {
       username: username,
     },
+  });
+}
+
+export async function getUserInfoById(id: string) {
+  return await prisma.user.findFirstOrThrow({
+    where:{
+      id: id
+    }
   });
 }
 
@@ -24,7 +36,7 @@ export async function createUser(data: Prisma.userCreateInput) {
 }
 
 export async function updateUser(
-  username: string,
+  id: string,
   data: {
     name?: string;
     email?: string;
@@ -33,18 +45,21 @@ export async function updateUser(
 ) {
   const user = await prisma.user.findUnique({
     where: {
-      username: username,
+      id: id,
     },
   });
 
   if (!user) {
-    throw new Error("用户名不存在");
+    throw new Error("用户不存在");
   }
 
   await prisma.user.update({
     data: data,
-    where: { username: username },
+    where: { id: id },
   });
+
+  revalidatePath("/main/signup");
+  redirect("/main/signup");
 }
 
 export async function getUserList(query: string, currentPage: number) {
@@ -83,4 +98,8 @@ export async function getUserPages(query: string) {
   });
 
   return count._count._all;
+}
+
+export async function hash(password: string) {
+  return await bcrypt.hash(password, 10);
 }
