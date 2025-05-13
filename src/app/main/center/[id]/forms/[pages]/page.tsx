@@ -11,6 +11,7 @@ import { EditIndicatorValue } from "@/ui/center/form";
 import {z} from 'zod';
 import { indicatorSchema } from "@/services/indicatorData";
 import { combo, comboItem } from "generated/prisma";
+import { PictureForm } from "@/ui/center/pic-form";
 
 
 
@@ -66,6 +67,18 @@ export default async function Page(props: {
             </Card>
           );
         })}
+
+        {category?.hasPic && (
+          <Card>
+            <CardHeader>
+              <CardTitle>检验照片</CardTitle>
+              <CardDescription>本检测类的结果是根据实验结果推断，此处上传实验室检测数据的图片。</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <PictureForm noriId={id} categoryId={categoryId}/>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </>
   );

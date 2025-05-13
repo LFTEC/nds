@@ -83,6 +83,7 @@ export async function getCorrespondingCategories(id: string) {
         categoryName: cate.category.name,
         categoryDescription: cate.category.description,
         serialNo: cate.category.serialNo,
+        hasPic: cate.category.hasPic
       };
     });
     return cCates;
