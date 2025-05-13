@@ -112,6 +112,7 @@ model category {
   serialNo      Int         @map("serial_no")
   invisible     Boolean    
   description   String
+  hasPic        Boolean     @map("has_pic") @default(false)
 
   indicators    indicator[]
   detections    detectCategory[]
@@ -124,6 +125,7 @@ model detectCategory {
   noriId        String   @db.Uuid @map("nori_id")
   categoryId    Int      @map("category_id")
   noDetection   Boolean
+  picture       Bytes?   @map("picture_data")
 
   nori          nori      @relation(fields: [noriId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   category      category  @relation(fields: [categoryId], references: [id], onDelete: NoAction, onUpdate: NoAction)

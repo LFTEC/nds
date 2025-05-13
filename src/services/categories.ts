@@ -21,6 +21,7 @@ const formSchema = z
     id: z.number(),
     name: z.coerce.string({ invalid_type_error: "请输入类别名称" }),
     description: z.coerce.string({ invalid_type_error: "请输入类别描述" }),
+    hasPic: z.boolean()
   })
   .omit({ id: true });
 
@@ -71,15 +72,17 @@ export async function saveCategoryName(
 ): Promise<errorState> {
   try {
     await prisma.category.findUniqueOrThrow({ where: { id: id } });
-    const { name, description } = formSchema.parse({
+    const { name, description, hasPic } = formSchema.parse({
       name: formData.get("name"),
       description: formData.get("description"),
+      hasPic: Boolean(formData.get("hasPic"))
     });
 
     await prisma.category.update({
       data: {
         name: name,
         description: description,
+        hasPic: hasPic
       },
       where: { id: id },
     });
