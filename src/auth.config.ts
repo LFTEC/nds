@@ -48,5 +48,8 @@ export const authConfig = {
           return token;
         }
     },
-    trustHost: true
+    trustHost: true,
+    session: {
+      maxAge: 86400
+    }
 } satisfies NextAuthConfig;
