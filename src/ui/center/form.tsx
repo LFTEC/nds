@@ -39,7 +39,7 @@ export function EditIndicatorValue({
     combo: (combo & { items: comboItem[] }) | null;
   };
 }) {
-  const data = result;  
+  const data = result;
 
   const form = useForm({
     defaultValues: data,
@@ -49,40 +49,36 @@ export function EditIndicatorValue({
   const watchedData = form.watch();
 
   const debounceRef = useRef<ReturnType<typeof debounce>>(null);
-  
-  useEffect(()=>{
+
+  useEffect(() => {
     debounceRef.current = debounce(form.handleSubmit(onSubmit), 1000);
-    return () => {debounceRef.current?.cancel();}
+    return () => {
+      debounceRef.current?.cancel();
+    };
   }, []);
 
-  useEffect(()=>{
-    if(form.formState.isDirty) {
+  useEffect(() => {
+    if (form.formState.isDirty) {
       debounceRef.current?.();
     }
-  },[watchedData]);
-
-  
+  }, [watchedData]);
 
   //const [state, setState] = useState<errorState>({ state: "success" });
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
-
     const error = await updateIndicateResult(data);
     //setState(error);
 
-    if(error.state === "error") {
-      toast("更新检验结果时发生异常", {description: error.message});
+    if (error.state === "error") {
+      toast("更新检验结果时发生异常", { description: error.message });
       form.reset();
     } else {
       form.reset(data);
     }
-  };  
-
-
+  };
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
-
         <FormField
           control={form.control}
           name="noriId"
@@ -153,7 +149,10 @@ export function EditIndicatorValue({
                 <FormLabel className="inline-flex flex-row justify-between mr-2">
                   <span>检测值</span>
                   <span>
-                    {indicator.thresholdLow} - {indicator.thresholdHigh}
+                    {indicator.thresholdHigh === "0" &&
+                    indicator.thresholdLow === "0"
+                      ? "N/A"
+                      : `${indicator.thresholdLow} - ${indicator.thresholdHigh}`}
                   </span>
                 </FormLabel>
                 <FormControl>
@@ -218,7 +217,7 @@ export function EditIndicatorValue({
                   <RadioGroup
                     value={field.value ? "true" : "false"}
                     onValueChange={(e) => {
-                      field.onChange(e==="true"?true:false);
+                      field.onChange(e === "true" ? true : false);
                     }}
                     disabled={watchedData.noDetection}
                     className="flex flex-row space-x-5"

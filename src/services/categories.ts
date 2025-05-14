@@ -4,7 +4,8 @@ import { category } from "generated/prisma";
 import { errorState } from "@/lib/utils";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
+import { redirect, RedirectType } from "next/navigation";
+import { sortableSchema } from "@/data/category/categoryData";
 
 export async function allCategories(): Promise<category[]> {
   return await prisma.category.findMany({ orderBy: { serialNo: "asc" } });
@@ -65,6 +66,24 @@ export async function setInvisible({
   }
 }
 
+export async function sortCategories(cates: z.infer<typeof sortableSchema>[] ) {
+  try {
+    await prisma.$transaction(
+      async (tx) => {
+        for(const [index, item] of cates.entries()) {
+          await tx.category.update({
+            data: { serialNo: index + 1},
+            where: {id: item.id}
+          });
+        }
+      }
+    );
+  } catch(error) {
+
+  }
+  
+}
+
 export async function saveCategoryName(
   id: number,
   prevState: errorState,
@@ -75,7 +94,7 @@ export async function saveCategoryName(
     const { name, description, hasPic } = formSchema.parse({
       name: formData.get("name"),
       description: formData.get("description"),
-      hasPic: Boolean(formData.get("hasPic"))
+      hasPic: JSON.parse(formData.get("hasPic")?.toString()!)
     });
 
     await prisma.category.update({
@@ -88,7 +107,8 @@ export async function saveCategoryName(
     });
 
     revalidatePath("/main/categories");
-    redirect("/main/categories");
+    return {state: "success"};
+    
   } catch (error) {
     console.error(error);
     return { state: "error", message: "更新类别信息发生故障，请稍后再试" };
@@ -118,9 +138,10 @@ export async function createCategory(
     });
 
     revalidatePath("/main/categories");
-    redirect("/main/categories");
   } catch (error) {
     console.error(error);
     return { state: "error", message: "创建检测类别时发生故障，请稍后再试" };
+  } finally {
+    redirect("/main/categories");
   }
 }

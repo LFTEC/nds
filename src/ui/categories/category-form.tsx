@@ -111,7 +111,6 @@ export function CategoryForm({
               <FormLabel>留存图片</FormLabel>
               <FormControl>
                 <Switch
-                    className=""
                     checked={field.value}
                     onCheckedChange={field.onChange}
                   />
