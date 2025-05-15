@@ -10,7 +10,7 @@ import { getUserList } from "@/services/userService";
 import { getUserPages } from "@/services/userService";
 import { PaginationBox } from "@/ui/pagination";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { UserButton, PasswordButton } from "@/ui/signup/user-button";
+import { UserCreateButton, PasswordButton, UserUpdateButton } from "@/ui/signup/user-button";
 
 export default async function Page({
   searchParams,
@@ -37,7 +37,7 @@ export default async function Page({
           <p className="border-b" />
           <div className="flex gap-4 mx-2 my-2">
             <SearchInput placeholder="查询用户信息" />
-            <UserButton behavior="create" />
+            <UserCreateButton />
           </div>
           <Table>
             <TableHeader>
@@ -54,7 +54,7 @@ export default async function Page({
                   <TableCell>{user.username}</TableCell>
                   <TableCell>{user.name}</TableCell>
                   <TableCell>{user.email}</TableCell>
-                  <TableCell><div className="flex items-center gap-2"><UserButton id={user.id} behavior="edit" /><PasswordButton id={user.id}/> </div></TableCell>
+                  <TableCell><div className="flex items-center gap-2"><UserUpdateButton id={user.id} /><PasswordButton id={user.id}/> </div></TableCell>
                 </TableRow>
               ))}
             </TableBody>

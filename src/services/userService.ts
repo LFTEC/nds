@@ -33,6 +33,8 @@ export async function createUser(data: Prisma.userCreateInput) {
   await prisma.user.create({
     data: data,
   });
+
+  revalidatePath("/main/signup");
 }
 
 export async function updateUser(
@@ -51,6 +53,10 @@ export async function updateUser(
 
   if (!user) {
     throw new Error("用户不存在");
+  }
+
+  if(data.password) {
+    data.password = await bcrypt.hash(data.password, 10);
   }
 
   await prisma.user.update({
@@ -98,8 +104,4 @@ export async function getUserPages(query: string) {
   });
 
   return count._count._all;
-}
-
-export async function hash(password: string) {
-  return await bcrypt.hash(password, 10);
 }

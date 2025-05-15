@@ -126,6 +126,9 @@ model detectCategory {
   categoryId    Int      @map("category_id")
   noDetection   Boolean
   picture       Bytes?   @map("picture_data")
+  fileName      String?  @map("file_name") @db.VarChar(50)
+  mimetype      String?  @db.VarChar(50)
+
 
   nori          nori      @relation(fields: [noriId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   category      category  @relation(fields: [categoryId], references: [id], onDelete: NoAction, onUpdate: NoAction)

@@ -4,7 +4,7 @@ import { category } from "generated/prisma";
 import { errorState } from "@/lib/utils";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
-import { redirect, RedirectType } from "next/navigation";
+import { redirect } from "next/navigation";
 import { sortableSchema } from "@/data/category/categoryData";
 
 export async function allCategories(): Promise<category[]> {
@@ -79,7 +79,8 @@ export async function sortCategories(cates: z.infer<typeof sortableSchema>[] ) {
       }
     );
   } catch(error) {
-
+    console.error(error);
+    throw new Error("保存检验类别顺序时出错", {cause: error})
   }
   
 }

@@ -274,3 +274,43 @@ export async function updateIndicateResult(
     return { state: "error", message: "更新数据时发生异常" };
   }
 }
+
+export async function updatePicture(noriId: string, categoryId: number, body: File) {
+  try{
+    const buffer = Buffer.from(await body.arrayBuffer()) ;
+    await prisma.detectCategory.update({
+      data: {
+        picture: buffer,
+        fileName: body.name,
+        mimetype: body.type
+      },
+      where: {
+        noriId_categoryId: {noriId: noriId, categoryId: categoryId}
+      }
+    })
+  } catch(error) {
+    console.error(error);
+    throw new Error("上传图片失败", {cause: error});
+  }
+}
+
+export async function fetchPicture(noriId: string, categoryId: number) {
+    const data = await prisma.detectCategory.findUnique({
+      select: {
+        fileName: true,
+        mimetype: true,
+        picture: true
+      },
+      where: {noriId_categoryId: {
+        noriId: noriId,
+        categoryId: categoryId
+      }}
+    });
+
+    if(data?.picture) {
+      const file = new File([data.picture], data.fileName!, {type: data.mimetype!});
+      return file;
+    }
+    
+    return null;
+}

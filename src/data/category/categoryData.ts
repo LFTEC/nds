@@ -1,4 +1,4 @@
-import { number, z } from "zod";
+import { z } from "zod";
 
 export const sortableSchema = z.object({
   id: z.number(),
