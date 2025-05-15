@@ -5,7 +5,7 @@
 
 */
 -- AlterTable
-ALTER TABLE "t_detection_category" ADD COLUMN     "has_pic" BOOLEAN;
+ALTER TABLE "t_detection_category" ADD COLUMN     "has_pic" BOOLEAN NOT NULL DEFAULT false;
 
 -- AlterTable
 ALTER TABLE "t_users" ALTER COLUMN "email" SET NOT NULL;

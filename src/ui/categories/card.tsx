@@ -57,8 +57,8 @@ export function CategoryCard({ item }: { item: category }) {
     <Dialog open={open} onOpenChange={setOpen}>
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center">
-            {item.name}
+          <CardTitle className="flex items-center shrink overflow-hidden text-ellipsis">
+            <span>{item.name}</span>
             <DialogTrigger asChild>
               <Button
                 variant="ghost"
@@ -69,7 +69,9 @@ export function CategoryCard({ item }: { item: category }) {
               </Button>
             </DialogTrigger>
           </CardTitle>
-          <CardDescription>{item.description}</CardDescription>
+          <CardDescription className="max-h-10 overflow-hidden text-ellipsis line-clamp-2">
+            {item.description}
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex flex-row justify-between">
