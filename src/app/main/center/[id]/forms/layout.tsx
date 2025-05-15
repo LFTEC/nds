@@ -50,6 +50,7 @@ export default async function Layout({
                     key={cate.categoryId}
                     href={`${pathname}category-${cate.categoryId}`}
                     name={cate.categoryName}
+                    className="line-clamp-1 text-ellipsis whitespace-normal"
                   />
                 ))}
 

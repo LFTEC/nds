@@ -57,19 +57,21 @@ export function CategoryCard({ item }: { item: category }) {
     <Dialog open={open} onOpenChange={setOpen}>
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center">
-            {item.name}
+          <CardTitle className="flex items-center justify-between">
+            <span className="text-ellipsis line-clamp-1">{item.name}</span>
             <DialogTrigger asChild>
               <Button
                 variant="ghost"
                 size="icon"
-                className="hover:bg-transparent border-none outline-0 cursor-pointer"
+                className="hover:bg-transparent border-none outline-0 cursor-pointer shrink-0"
               >
                 <HiPencilAlt className="icon-b size-5 text-primary cursor-pointer ml-2" />
               </Button>
             </DialogTrigger>
           </CardTitle>
-          <CardDescription>{item.description}</CardDescription>
+          <CardDescription className="max-h-10 overflow-hidden text-ellipsis line-clamp-2">
+            {item.description}
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex flex-row justify-between">
