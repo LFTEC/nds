@@ -57,13 +57,13 @@ export function CategoryCard({ item }: { item: category }) {
     <Dialog open={open} onOpenChange={setOpen}>
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center shrink overflow-hidden text-ellipsis">
-            <span>{item.name}</span>
+          <CardTitle className="flex items-center justify-between">
+            <span className="text-ellipsis line-clamp-1">{item.name}</span>
             <DialogTrigger asChild>
               <Button
                 variant="ghost"
                 size="icon"
-                className="hover:bg-transparent border-none outline-0 cursor-pointer"
+                className="hover:bg-transparent border-none outline-0 cursor-pointer shrink-0"
               >
                 <HiPencilAlt className="icon-b size-5 text-primary cursor-pointer ml-2" />
               </Button>

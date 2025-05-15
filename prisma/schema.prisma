@@ -126,7 +126,7 @@ model detectCategory {
   categoryId    Int      @map("category_id")
   noDetection   Boolean
   picture       Bytes?   @map("picture_data")
-  fileName      String?  @map("file_name") @db.VarChar(50)
+  fileName      String?  @map("file_name") @db.VarChar(255)
   mimetype      String?  @db.VarChar(50)
 
 
