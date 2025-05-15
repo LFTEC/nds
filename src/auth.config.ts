@@ -18,6 +18,7 @@ export const authConfig = {
     pages: {
         signIn: "/login"
     },
+    
     providers:[],
     callbacks: {
         authorized: ({auth, request:{nextUrl}}) => {
@@ -47,5 +48,8 @@ export const authConfig = {
           return token;
         }
     },
-    trustHost: true
+    trustHost: true,
+    session: {
+      maxAge: 86400
+    }
 } satisfies NextAuthConfig;

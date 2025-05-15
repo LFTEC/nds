@@ -1,4 +1,10 @@
-import { detectCategory, detectResult, indicator, combo, comboItem } from "generated/prisma";
+import {
+  detectCategory,
+  detectResult,
+  indicator,
+  combo,
+  comboItem,
+} from "generated/prisma";
 import { z } from "zod";
 
 export interface indicatingData {
@@ -15,10 +21,13 @@ export interface indicatingData {
 
 export interface categoryWithIndicators extends detectCategory {
   detectResults: detectResult[];
-  indicators: (indicator & {combo: combo & {items: comboItem[]} | null})[];
+  indicators: (indicator & {
+    combo: (combo & { items: comboItem[] }) | null;
+  })[];
   categoryName: string;
   categoryDescription: string;
   serialNo: number;
+  hasPic: boolean;
 }
 
 export const formSchema = z.object({
@@ -36,3 +45,18 @@ export const formSchema = z.object({
   comboItemData: z.coerce.number().nullable(),
   suggestionText: z.string({ invalid_type_error: "请输入建议文本" }),
 });
+
+export const pictureSchema = z
+  .object({
+    noriId: z.string({ invalid_type_error: "样品编号丢失" }),
+    categoryId: z.number({ invalid_type_error: "检验类别丢失" }),
+    picture: z
+      .instanceof(File)
+      .refine((file) => file.type.startsWith("image/"), {
+        message: "必须上传图片类型附件",
+      })
+      .refine((file) => file.size < 10 * 1024 * 1024, {
+        message: "文件大小不能超过10M",
+      }),
+  })
+  .omit({ noriId: true, categoryId: true });

@@ -112,6 +112,7 @@ model category {
   serialNo      Int         @map("serial_no")
   invisible     Boolean    
   description   String
+  hasPic        Boolean     @map("has_pic") @default(false)
 
   indicators    indicator[]
   detections    detectCategory[]
@@ -124,6 +125,10 @@ model detectCategory {
   noriId        String   @db.Uuid @map("nori_id")
   categoryId    Int      @map("category_id")
   noDetection   Boolean
+  picture       Bytes?   @map("picture_data")
+  fileName      String?  @map("file_name") @db.VarChar(50)
+  mimetype      String?  @db.VarChar(50)
+
 
   nori          nori      @relation(fields: [noriId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   category      category  @relation(fields: [categoryId], references: [id], onDelete: NoAction, onUpdate: NoAction)
@@ -137,7 +142,7 @@ model user {
   id        String  @id(map: "users_pk") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid @map("user_id")
   username  String  @unique(map: "users_unique") @db.VarChar(20) @map("user_name")
   name      String  @db.VarChar(50)
-  email     String? @db.VarChar(100)
+  email     String  @db.VarChar(100)
   password  String
 
   detectResults   detectResult[]

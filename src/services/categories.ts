@@ -5,6 +5,7 @@ import { errorState } from "@/lib/utils";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { sortableSchema } from "@/data/category/categoryData";
 
 export async function allCategories(): Promise<category[]> {
   return await prisma.category.findMany({ orderBy: { serialNo: "asc" } });
@@ -21,6 +22,7 @@ const formSchema = z
     id: z.number(),
     name: z.coerce.string({ invalid_type_error: "请输入类别名称" }),
     description: z.coerce.string({ invalid_type_error: "请输入类别描述" }),
+    hasPic: z.boolean()
   })
   .omit({ id: true });
 
@@ -64,6 +66,25 @@ export async function setInvisible({
   }
 }
 
+export async function sortCategories(cates: z.infer<typeof sortableSchema>[] ) {
+  try {
+    await prisma.$transaction(
+      async (tx) => {
+        for(const [index, item] of cates.entries()) {
+          await tx.category.update({
+            data: { serialNo: index + 1},
+            where: {id: item.id}
+          });
+        }
+      }
+    );
+  } catch(error) {
+    console.error(error);
+    throw new Error("保存检验类别顺序时出错", {cause: error})
+  }
+  
+}
+
 export async function saveCategoryName(
   id: number,
   prevState: errorState,
@@ -71,21 +92,24 @@ export async function saveCategoryName(
 ): Promise<errorState> {
   try {
     await prisma.category.findUniqueOrThrow({ where: { id: id } });
-    const { name, description } = formSchema.parse({
+    const { name, description, hasPic } = formSchema.parse({
       name: formData.get("name"),
       description: formData.get("description"),
+      hasPic: JSON.parse(formData.get("hasPic")?.toString()!)
     });
 
     await prisma.category.update({
       data: {
         name: name,
         description: description,
+        hasPic: hasPic
       },
       where: { id: id },
     });
 
     revalidatePath("/main/categories");
-    redirect("/main/categories");
+    return {state: "success"};
+    
   } catch (error) {
     console.error(error);
     return { state: "error", message: "更新类别信息发生故障，请稍后再试" };
@@ -115,9 +139,10 @@ export async function createCategory(
     });
 
     revalidatePath("/main/categories");
-    redirect("/main/categories");
   } catch (error) {
     console.error(error);
     return { state: "error", message: "创建检测类别时发生故障，请稍后再试" };
+  } finally {
+    redirect("/main/categories");
   }
 }

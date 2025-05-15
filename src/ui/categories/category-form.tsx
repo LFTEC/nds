@@ -13,6 +13,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { category } from "generated/prisma";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 
 import { z } from "zod";
 import { saveCategoryName } from "@/services/categories";
@@ -25,6 +26,7 @@ const formSchema = z.object({
   description: z
     .string({ invalid_type_error: "请录入类别描述" })
     .min(1, "请录入类别描述"),
+  hasPic: z.boolean()
 });
 
 export function CategoryForm({
@@ -39,6 +41,7 @@ export function CategoryForm({
     defaultValues: {
       name: cate.name,
       description: cate.description ?? "",
+      hasPic: cate.hasPic ?? false
     },
   });
 
@@ -59,6 +62,7 @@ export function CategoryForm({
       const formData = new FormData();
       formData.append("name", data.name);
       formData.append("description", data.description);
+      formData.append("hasPic", data.hasPic? "true": "false");
       await saveCategoryName(cate.id, { state: "success" }, formData);
       setOpen(false);
     } finally {
@@ -94,6 +98,22 @@ export function CategoryForm({
               <FormLabel>类别描述</FormLabel>
               <FormControl>
                 <Input placeholder="请输入类别描述" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="hasPic"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>留存图片</FormLabel>
+              <FormControl>
+                <Switch
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
               </FormControl>
               <FormMessage />
             </FormItem>

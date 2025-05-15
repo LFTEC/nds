@@ -8,6 +8,7 @@ import {
   IconHelp,
   IconReport,
   IconSettings,
+  IconUser
 } from "@tabler/icons-react"
 
 
@@ -44,7 +45,7 @@ const data = {
     {
       title: "检验员注册",
       url: "/main/signup",
-      icon: IconSettings,
+      icon: IconUser,
     },
     {
       title: "Get Help",
