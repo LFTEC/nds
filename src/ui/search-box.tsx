@@ -13,7 +13,6 @@ export function SearchInput(props: React.ComponentProps<"input">) {
 
   const debounceSubmit = useRef<ReturnType<typeof debounce>>(null);
   useEffect(() => {
-    console.log("我初始化了一次");
     debounceSubmit.current = debounce((term: string)=>{
       console.log("我被调用一次");
       const params = new URLSearchParams(searchParams);

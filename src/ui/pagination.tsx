@@ -68,7 +68,7 @@ export function PaginationBox({ totalPages }: { totalPages: number }) {
           </PaginationItem>
         ))}
         <PaginationItem>
-          <PaginationNext isDisabled={currentPage === totalPages}
+          <PaginationNext isDisabled={currentPage >= totalPages}
             href={createPageUrl(currentPage + 1)}
           ></PaginationNext>
         </PaginationItem>
