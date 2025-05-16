@@ -28,10 +28,7 @@ import { zhCN } from "date-fns/locale";
 import { HiOutlinePencil } from "react-icons/hi2";
 import { HiOutlineCalendarDays } from "react-icons/hi2";
 
-import {
-  noriData,
-  formSchema,
-} from "@/data/registry/registryData";
+import { noriData, formSchema } from "@/data/registry/registryData";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -44,7 +41,7 @@ import { updateNori } from "@/services/noriService";
 export function EditNori({
   noriData,
   behavior,
-  className
+  className,
 }: React.ComponentProps<"button"> & {
   noriData?: noriData;
   behavior: "create" | "edit";
@@ -71,6 +68,8 @@ export function EditNori({
 
   const [state, setState] = useState<errorState>({ state: "success" });
   const [open, setOpen] = useState(false);
+  const [isEOpen, setIsEOpen] = useState(false);
+  const [isPOpen, setIsPOpen] = useState(false);
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     const result = await updateNori(noriData?.id, { state: "success" }, data);
@@ -113,7 +112,6 @@ export function EditNori({
         </DialogHeader>
 
         {noriData?.batchNo && <h2 className="mb-3">批次-{noriData.batchNo}</h2>}
-
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
             {state.state == "error" && (
@@ -141,10 +139,12 @@ export function EditNori({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>展会日期</FormLabel>
-                  <Popover>
+                  <Popover modal={true} open={isEOpen} onOpenChange={setIsEOpen}>
                     <PopoverTrigger asChild>
                       <FormControl>
-                        <Button variant="outline">
+                        <Button
+                          variant="outline"
+                        >
                           {field.value ? (
                             format(field.value, "yyyy-MM-dd")
                           ) : (
@@ -154,11 +154,11 @@ export function EditNori({
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
-                    <PopoverContent>
+                    <PopoverContent >
                       <Calendar
                         mode="single"
                         selected={field.value}
-                        onSelect={field.onChange}
+                        onSelect={(e)=>{field.onChange(e); setIsEOpen(false)}}
                         initialFocus
                         locale={zhCN}
                       />
@@ -187,7 +187,7 @@ export function EditNori({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>生产日期</FormLabel>
-                  <Popover>
+                  <Popover modal={true} open={isPOpen} onOpenChange={setIsPOpen}>
                     <PopoverTrigger asChild>
                       <FormControl>
                         <Button variant="outline">
@@ -204,7 +204,7 @@ export function EditNori({
                       <Calendar
                         mode="single"
                         selected={field.value ?? undefined}
-                        onSelect={field.onChange}
+                        onSelect={(e)=>{field.onChange(e); setIsPOpen(false)}}
                         initialFocus
                         locale={zhCN}
                       />
