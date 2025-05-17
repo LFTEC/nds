@@ -47,8 +47,15 @@ export async function getTopIndicatingList() {
   });
 }
 
-export async function getStatisticsChartData() {
-  await prisma.$queryRaw`
+export interface chartData {
+  month: string;
+  create: number;
+  detection: number;
+  complete: number;
+}
+
+export async function getStatisticsChartData(): Promise<chartData[]> {
+  const result:any = await prisma.$queryRaw`
     with RECURSIVE all_dates as (
     select distinct date_value
     from (
@@ -87,7 +94,14 @@ export async function getStatisticsChartData() {
     where a.date_value is not null
     group by to_char(a.date_value,'YY/Mon')) as z on to_char(m.month_date, 'YY/Mon') = z.year_month
     ORDER BY month_date;
-  `
+  `;
+
+  return result.map((month:any)=>({
+    month: month.year_month,
+    create:  Number(month.create_count),
+    detection: Number(month.detection_count),
+    complete: Number(month.complete_count)
+  }));
 }
 
 
