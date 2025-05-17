@@ -42,7 +42,7 @@ export default async function Layout({
         <CardContent>
           <div className="shrink-0 bg-border h-[1px] w-full mb-4" />
 
-          <div className="flex flex-col space-y-8 md:flex-row md:space-x-12 md:space-y-0">
+          <div className="flex flex-col space-y-8 lg:flex-row md:space-x-12 md:space-y-0">
             <aside className="-ml-4 lg:w-1/5">
               <nav className="flex space-x-2 lg:flex-col lg:space-x-0 lg:space-y-1">
                 {correspondingCategories.map((cate) => (
