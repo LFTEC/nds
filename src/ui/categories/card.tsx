@@ -5,6 +5,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  CardAction,
 } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -57,8 +58,10 @@ export function CategoryCard({ item }: { item: category }) {
     <Dialog open={open} onOpenChange={setOpen}>
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center justify-between">
-            <span className="text-ellipsis line-clamp-1">{item.name}</span>
+          <CardTitle className="text-ellipsis line-clamp-1">
+            {item.name}
+          </CardTitle>
+          <CardAction>
             <DialogTrigger asChild>
               <Button
                 variant="ghost"
@@ -68,8 +71,8 @@ export function CategoryCard({ item }: { item: category }) {
                 <HiPencilAlt className="icon-b size-5 text-primary cursor-pointer ml-2" />
               </Button>
             </DialogTrigger>
-          </CardTitle>
-          <CardDescription className="h-10 overflow-hidden text-ellipsis line-clamp-2">
+          </CardAction>
+          <CardDescription className="max-h-10 overflow-hidden text-ellipsis line-clamp-2">
             {item.description}
           </CardDescription>
         </CardHeader>
