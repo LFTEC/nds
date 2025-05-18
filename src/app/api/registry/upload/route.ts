@@ -3,7 +3,6 @@ import { NextResponse } from "next/server";
 import { errorState } from "@/lib/utils";
 import { updateNori } from "@/services/noriService";
 import { formSchema } from "@/data/registry/registryData";
-import { revalidatePath } from "next/cache";
 
 export const config = {
   api: {
