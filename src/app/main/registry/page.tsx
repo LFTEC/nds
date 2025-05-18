@@ -4,6 +4,7 @@ import { getTotalPages } from "@/services/noriService";
 import { EditNori } from "@/ui/registry/edit-form";
 import { SearchInput } from "@/ui/search-box";
 import { PaginationBox } from "@/ui/pagination";
+import { ImportButton } from "@/ui/registry/import-button";
 
 export default async function Page(props: {
   searchParams?: Promise<{ query?: string; page?: number }>;
@@ -25,6 +26,7 @@ export default async function Page(props: {
           <p className="border-b"/>
           <div className="flex gap-4 mx-2 my-2">
             <SearchInput placeholder="查询待检样品清单" />
+            <ImportButton />
             <EditNori behavior="create" />
           </div>
           <RegistryTable query={query} currentPage={page} />

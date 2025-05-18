@@ -72,7 +72,7 @@ export function CategoryCard({ item }: { item: category }) {
               </Button>
             </DialogTrigger>
           </CardAction>
-          <CardDescription className="max-h-10 overflow-hidden text-ellipsis line-clamp-2">
+          <CardDescription className="h-10 overflow-hidden text-ellipsis line-clamp-2">
             {item.description}
           </CardDescription>
         </CardHeader>
