@@ -8,6 +8,7 @@ import { z } from "zod";
 import { auth } from "@/auth";
 import { format } from "date-fns";
 import { redirect } from "next/navigation";
+import { Prisma } from "generated/prisma";
 
 interface registryDataType {
   nori_id: string;
@@ -109,6 +110,45 @@ export async function getNoriDataById(id: string) {
   }
 }
 
+export const databaseCreateNori = async (
+  data: z.infer<typeof formSchema>[]
+) => {
+  const dd = new Date();
+  const ym =
+    dd.getFullYear() +
+    String(dd.getMonth() + 1).padStart(2, "0") +
+    String(dd.getDate()).padStart(2, "0");
+  const prefix = "JY";
+
+  const maxBatch = await prisma.nori.aggregate({
+    _max: { batchNo: true },
+    where: { batchNo: { startsWith: prefix + ym } },
+  });
+
+  let serialNo: number;
+  if (!maxBatch._max.batchNo) {
+    serialNo = 1;
+  } else {
+    serialNo = Number(maxBatch._max.batchNo.slice(-4)) + 1;
+  }
+
+  const user = (await auth())?.user;
+  if (user === undefined) {
+    throw new Error("用户未登录");
+  }
+
+  const createData = data.map<Prisma.noriCreateManyInput>((nori) => ({
+    ...nori,
+    batchNo: prefix + ym + String(serialNo++).padStart(4, "0"),
+    creatorId: user.id!,
+    createDate: new Date(),
+  }));
+
+  await prisma.nori.createMany({
+    data: createData,
+  });
+};
+
 export async function updateNori(
   id: string | undefined,
   privState: errorState,
@@ -130,46 +170,7 @@ export async function updateNori(
         },
       });
     } else {
-      const d = new Date();
-      const ym =
-        d.getFullYear() +
-        String(d.getMonth() + 1).padStart(2, "0") +
-        String(d.getDate()).padStart(2, "0");
-      const prefix = "JY";
-      const maxBatch = await prisma.nori.aggregate({
-        _max: { batchNo: true },
-        where: { batchNo: { startsWith: prefix + ym } },
-      });
-
-      let currentBatchNo: string;
-      if (!maxBatch._max.batchNo) {
-        currentBatchNo = prefix + ym + "0001";
-      } else {
-        const serial = Number(maxBatch._max.batchNo.slice(-4)) + 1;
-        currentBatchNo = prefix + ym + String(serial).padStart(4, "0");
-      }
-
-      const session = await auth();
-
-      if (!session?.user?.id) {
-        throw new Error("用户未登录");
-      }
-
-      await prisma.nori.create({
-        data: {
-          batchNo: currentBatchNo,
-          vendor: data.vendor,
-          exhibitionDate: new Date(format(data.exhibitionDate, "yyyy-MM-dd")),
-          exhibitionId: data.exhibitionId,
-          productionDate: data.productionDate
-            ? new Date(format(data.productionDate, "yyyy-MM-dd"))
-            : null,
-          boxQuantity: data.boxQuantity,
-          maritime: data.maritime,
-          creatorId: session?.user?.id,
-          createDate: new Date(),
-        },
-      });
+      await databaseCreateNori([data]);
     }
 
     revalidatePath("/main/registry");
@@ -262,9 +263,9 @@ export async function getIndicatingNoris(query: string, currentPage: number) {
 }
 
 export async function getReportsTotalPages(query: string) {
-  query = query.replaceAll('*', '%');
+  query = query.replaceAll("*", "%");
 
-  const result:any = await prisma.$queryRaw`
+  const result: any = await prisma.$queryRaw`
     select count(*)
     from t_nori_info
     where complete_date is not null
@@ -282,8 +283,8 @@ export async function getReportsTotalPages(query: string) {
   return Math.ceil(Number(result[0].count) / 20);
 }
 
-export async function getReports(query:string, currentPage: number) {
-  query = query.replaceAll('*', '%');
+export async function getReports(query: string, currentPage: number) {
+  query = query.replaceAll("*", "%");
 
   const result: any = await prisma.$queryRaw`
     select nori_id
@@ -312,28 +313,28 @@ export async function getReports(query:string, currentPage: number) {
       detections: true,
       createDate: true,
       startDate: true,
-      finishDate: true
+      finishDate: true,
     },
     where: {
-      OR: result.map(({nori_id}: {nori_id: string})=>({
-        id: nori_id
-      }))
+      OR: result.map(({ nori_id }: { nori_id: string }) => ({
+        id: nori_id,
+      })),
     },
     orderBy: {
-      batchNo: "asc"
-    }
+      batchNo: "asc",
+    },
   });
 
-  return noriList.map(nori=>{
+  return noriList.map((nori) => {
     const report = {
       ...nori,
       allIndicators: nori.detections.length,
-      finishedIndicators: 0
-    }
+      finishedIndicators: 0,
+    };
 
-    nori.detections.forEach(d=>{
-      if(d.result === "Y") {
-        report.finishedIndicators ++;
+    nori.detections.forEach((d) => {
+      if (d.result === "Y") {
+        report.finishedIndicators++;
       }
     });
 

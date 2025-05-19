@@ -1,8 +1,10 @@
 import * as xlsx from "xlsx";
 import { NextResponse } from "next/server";
 import { errorState } from "@/lib/utils";
-import { updateNori } from "@/services/noriService";
+import { databaseCreateNori } from "@/services/noriService";
 import { formSchema } from "@/data/registry/registryData";
+import { Prisma } from 'generated/prisma';
+import {z} from "zod";
 
 export const config = {
   api: {
@@ -32,16 +34,28 @@ export async function POST(request:Request) {
     const sheet = workbook.Sheets[sheetName];
     const data = xlsx.utils.sheet_to_json<excelDataType>(sheet, {header: ["vendor", "exhibitionDate", "exhibitionId", "productionDate", "maritime", "boxQuantity"], raw: false, range: 1});
 
-    for(const nori of data) {
-      const state = await updateNori(undefined, {state: "success"}, formSchema.parse(nori) );
-      if(state.state === "error") 
-        throw new Error(state.message??"");
-    }
+    const noris = data.map<z.infer<typeof formSchema>>(nori=>(
+      formSchema.parse(nori)
+    ));
 
+
+    await databaseCreateNori(noris);
     return NextResponse.json<errorState>({state:"success"});
     
-  } catch (error: any) {
-    console.error(error);
-    return NextResponse.json<errorState>({state:"error", message:error.message});
+  } catch (error) {
+    console.log('错误对象:', error);
+  console.log('构造函数:', error?.constructor);
+  console.log('构造函数名:', error?.constructor?.name);
+  console.log('原型链:', Object.getPrototypeOf(error));
+  console.log('是否是Error:', error instanceof Error);
+  console.log('是否是PrismaClientKnownRequestError:', error instanceof Prisma.PrismaClientKnownRequestError);
+    if(error instanceof Prisma.PrismaClientKnownRequestError) {
+      console.log(error.code);
+      if (error.code === "P2002") {
+        return NextResponse.json<errorState>({state: "error", message: "传入重复的样品信息"}, {status: 500});
+      }
+    }
+    
+    return NextResponse.json<errorState>({state:"error"}, {status: 500});
   }
 }

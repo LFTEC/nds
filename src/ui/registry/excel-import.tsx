@@ -33,7 +33,13 @@ const excelSchema = z.object({
     ),
 });
 
-export function ExcelImport({ ref, onClose }: { ref: React.Ref<handleExcelImport>; onClose: () => void; }) {
+export function ExcelImport({
+  ref,
+  onClose,
+}: {
+  ref: React.Ref<handleExcelImport>;
+  onClose: () => void;
+}) {
   const router = useRouter();
   const form = useForm<z.infer<typeof excelSchema>>({
     resolver: zodResolver(excelSchema),
@@ -43,26 +49,28 @@ export function ExcelImport({ ref, onClose }: { ref: React.Ref<handleExcelImport
 
   useEffect(() => {
     if (state?.state === "error") {
-      toast(state.message);
+      toast.error("发生错误", {description: state.message});
     }
   }, [state]);
 
   const onSubmit = async (data: z.infer<typeof excelSchema>) => {
     const formData = new FormData();
     formData.append("excel", data.file);
-    const response = await axios.post("/api/registry/upload", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
+    try {
+      const response = await axios.post("/api/registry/upload", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
-    setState(response.data);
-    if(response.data.state !== "error") {
       router.refresh();
-    }
-    
-    onClose();
-    
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        setState(error.response?.data);
+      }
+    } finally {
+      onClose();
+    }    
   };
 
   useImperativeHandle(ref, () => ({ submit: form.handleSubmit(onSubmit) }));
