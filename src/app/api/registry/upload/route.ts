@@ -43,14 +43,7 @@ export async function POST(request:Request) {
     return NextResponse.json<errorState>({state:"success"});
     
   } catch (error) {
-    console.log('错误对象:', error);
-  console.log('构造函数:', error?.constructor);
-  console.log('构造函数名:', error?.constructor?.name);
-  console.log('原型链:', Object.getPrototypeOf(error));
-  console.log('是否是Error:', error instanceof Error);
-  console.log('是否是PrismaClientKnownRequestError:', error instanceof Prisma.PrismaClientKnownRequestError);
     if(error instanceof Prisma.PrismaClientKnownRequestError) {
-      console.log(error.code);
       if (error.code === "P2002") {
         return NextResponse.json<errorState>({state: "error", message: "传入重复的样品信息"}, {status: 500});
       }

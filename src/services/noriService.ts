@@ -1,6 +1,5 @@
 "use server";
 import { formSchema, summarySchema } from "@/data/registry/registryData";
-import { nori } from "generated/prisma";
 import prisma from "@/lib/prisma";
 import { errorState } from "@/lib/utils";
 import { revalidatePath } from "next/cache";
@@ -8,7 +7,7 @@ import { z } from "zod";
 import { auth } from "@/auth";
 import { format } from "date-fns";
 import { redirect } from "next/navigation";
-import { Prisma } from "generated/prisma";
+import { Prisma, nori } from "generated/prisma";
 
 interface registryDataType {
   nori_id: string;
