@@ -3,8 +3,9 @@ import { NextResponse } from "next/server";
 import { errorState } from "@/lib/utils";
 import { databaseCreateNori } from "@/services/noriService";
 import { formSchema } from "@/data/registry/registryData";
-import { Prisma } from 'generated/prisma';
+import {Prisma} from "generated/prisma";
 import {z} from "zod";
+import logger from "@/lib/logger";
 
 export const config = {
   api: {
@@ -23,6 +24,7 @@ export interface excelDataType {
 
 export async function POST(request:Request) {
   try {
+    logger.info("test");
     const formData = await request.formData();
     const file = formData.get("excel") as File;
     if (file.type !== "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") 
@@ -38,17 +40,17 @@ export async function POST(request:Request) {
       formSchema.parse(nori)
     ));
 
-
     await databaseCreateNori(noris);
     return NextResponse.json<errorState>({state:"success"});
     
   } catch (error) {
-    if(error instanceof Prisma.PrismaClientKnownRequestError) {
-      if (error.code === "P2002") {
+    const prismaError = error as Prisma.PrismaClientKnownRequestError;
+    if(prismaError) {
+      if (prismaError.code === "P2002") {
         return NextResponse.json<errorState>({state: "error", message: "传入重复的样品信息"}, {status: 500});
       }
     }
     
-    return NextResponse.json<errorState>({state:"error"}, {status: 500});
+    return NextResponse.json<errorState>({state:"error", message: "批量创建样品清单时发生异常"}, {status: 500});
   }
 }
