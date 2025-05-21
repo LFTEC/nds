@@ -1,6 +1,6 @@
 "use server";
 import { formSchema, summarySchema } from "@/data/registry/registryData";
-import prisma from "@/lib/prisma";
+import prisma, { isPrismaClientKnownError } from "@/lib/prisma";
 import { errorState } from "@/lib/utils";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
@@ -8,6 +8,7 @@ import { auth } from "@/auth";
 import { format } from "date-fns";
 import { redirect } from "next/navigation";
 import { Prisma, nori } from "generated/prisma";
+import logger from "@/lib/logger";
 
 interface registryDataType {
   nori_id: string;
@@ -138,6 +139,8 @@ export const databaseCreateNori = async (
 
   const createData = data.map<Prisma.noriCreateManyInput>((nori) => ({
     ...nori,
+    exhibitionDate: new Date(format(nori.exhibitionDate, "yyyy-MM-dd")),
+    productionDate: nori.productionDate ? new Date(format(nori.productionDate, "yyyy-MM-dd")): null,
     batchNo: prefix + ym + String(serialNo++).padStart(4, "0"),
     creatorId: user.id!,
     createDate: new Date(),
@@ -148,26 +151,33 @@ export const databaseCreateNori = async (
   });
 };
 
+export const databaseUpdateNori = async(noriId: string, data: z.infer<typeof formSchema>) =>{
+  await prisma.nori.update({
+    where: {id: noriId},
+    data: {
+      vendor: data.vendor,
+      exhibitionDate: new Date(format(data.exhibitionDate, "yyyy-MM-dd")),
+      exhibitionId: data.exhibitionId,
+      productionDate: data.productionDate
+        ? new Date(format(data.productionDate, "yyyy-MM-dd"))
+        : null,
+      maritime: data.maritime,
+      boxQuantity: data.boxQuantity,
+    }
+  })
+}
+
 export async function updateNori(
   id: string | undefined,
   privState: errorState,
   data: z.infer<typeof formSchema>
 ): Promise<errorState> {
+
   try {
+    logger.debug("进行紫菜样品的创建或更新工作", {data: data, id: id});
+
     if (id) {
-      await prisma.nori.update({
-        where: { id: id },
-        data: {
-          vendor: data.vendor,
-          exhibitionDate: new Date(format(data.exhibitionDate, "yyyy-MM-dd")),
-          exhibitionId: data.exhibitionId,
-          productionDate: data.productionDate
-            ? new Date(format(data.productionDate, "yyyy-MM-dd"))
-            : null,
-          maritime: data.maritime,
-          boxQuantity: data.boxQuantity,
-        },
-      });
+      await databaseUpdateNori(id, data);
     } else {
       await databaseCreateNori([data]);
     }
@@ -175,7 +185,16 @@ export async function updateNori(
     revalidatePath("/main/registry");
     return { state: "success" };
   } catch (error) {
-    console.error(error);
+    logger.error("进行紫菜样品的创建或更新工作时出错", {error});
+
+    if(isPrismaClientKnownError(error)) {
+      if(error.code === "P2002") {
+        return {state: "error", message: "传入重复的样品信息"};
+      } else if(error.code === "P2001") {
+        return {state: "error", message: "更新的紫菜样品信息不存在"};
+      }
+    }
+
     return { state: "error", message: "更新紫菜信息时发生异常" };
   }
 }

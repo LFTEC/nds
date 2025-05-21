@@ -37,6 +37,7 @@ import { cn, errorState } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { updateNori } from "@/services/noriService";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 
 export function EditNori({
   noriData,
@@ -83,6 +84,7 @@ export function EditNori({
       onOpenChange={(e) => {
         setOpen(e);
         setState({ state: "success" });
+        if(e) form.reset();
       }}
     >
       <DialogTrigger asChild>
@@ -249,7 +251,8 @@ export function EditNori({
               )}
             />
             <DialogFooter>
-              <Button type="submit">保存</Button>
+              <Button type="submit" disabled={form.formState.isSubmitting} className="min-w-24">
+                {form.formState.isSubmitting ? <AiOutlineLoading3Quarters className="animate-spin"/>: "保存"}</Button>
             </DialogFooter>
           </form>
         </Form>

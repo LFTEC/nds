@@ -12,10 +12,12 @@ import {
   DialogTrigger
 } from "@/components/ui/dialog";
 import { ExcelImport, handleExcelImport } from "./excel-import";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 
 export function ImportButton() {
   const refd = useRef<handleExcelImport>(null);
   const [isOpen, setIsOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -29,7 +31,7 @@ export function ImportButton() {
             从EXCEL中导入样品信息，请注意务必按照格式导入
           </DialogDescription>
         </DialogHeader>
-        <ExcelImport ref={refd} onClose={() => setIsOpen(false)} />
+        <ExcelImport ref={refd} onClose={() => setIsOpen(false)} onSubmitting={setIsSubmitting} />
 
         <DialogFooter>
           <Button variant="outline" asChild>
@@ -39,8 +41,10 @@ export function ImportButton() {
             onClick={() => {
               refd.current?.submit();
             }}
+            disabled={isSubmitting}
+            className="min-w-24"
           >
-            导入数据
+            {isSubmitting ? <AiOutlineLoading3Quarters className="animate-spin" />: "导入数据"}
           </Button>
         </DialogFooter>
       </DialogContent>

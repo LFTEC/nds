@@ -86,7 +86,7 @@ export function DataChart({ chartData }: { chartData: chartData[] }) {
           type="natural"
           fill="url(#fillDesktop)"
           stroke="var(--color-complete)"
-          stackId="a"
+          stackId="b"
         />
       </AreaChart>
     </ChartContainer>

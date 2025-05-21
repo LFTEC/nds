@@ -36,9 +36,11 @@ const excelSchema = z.object({
 export function ExcelImport({
   ref,
   onClose,
+  onSubmitting
 }: {
   ref: React.Ref<handleExcelImport>;
   onClose: () => void;
+  onSubmitting: (e: boolean) => void;
 }) {
   const router = useRouter();
   const form = useForm<z.infer<typeof excelSchema>>({
@@ -46,6 +48,8 @@ export function ExcelImport({
   });
 
   const [state, setState] = useState<errorState>();
+
+  onSubmitting(form.formState.isSubmitting);
 
   useEffect(() => {
     if (state?.state === "error") {
