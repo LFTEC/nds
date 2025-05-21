@@ -57,12 +57,12 @@ export function ExcelImport({
     const formData = new FormData();
     formData.append("excel", data.file);
     try {
-      const response = await axios.post("/api/registry/upload", formData, {
+      await axios.post("/api/registry/upload", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
-
+      
       router.refresh();
     } catch (error) {
       if (axios.isAxiosError(error)) {

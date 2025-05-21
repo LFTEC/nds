@@ -8,6 +8,7 @@ export function cn(...inputs: ClassValue[]) {
 export interface errorState {
   state: "error" | "warning" | "success";
   message?: string | null;
+  data?: any;
 }
 
 export const TransformIndicatorType = (indType: string | undefined) => {

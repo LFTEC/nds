@@ -3,9 +3,9 @@ import { NextResponse } from "next/server";
 import { errorState } from "@/lib/utils";
 import { databaseCreateNori } from "@/services/noriService";
 import { formSchema } from "@/data/registry/registryData";
-import {Prisma} from "generated/prisma";
 import {z} from "zod";
 import logger from "@/lib/logger";
+import { isPrismaClientKnownError } from "@/lib/prisma";
 
 export const config = {
   api: {
@@ -23,30 +23,39 @@ export interface excelDataType {
 }
 
 export async function POST(request:Request) {
+
   try {
-    logger.info("test");
+    logger.debug("进行Excel批量样品提交");
     const formData = await request.formData();
     const file = formData.get("excel") as File;
-    if (file.type !== "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") 
-      return NextResponse.json<errorState>({state: "error", message: "请传入正确的excel文件"});
+    if (file.type !== "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
+      logger.info("请传入正确的excel文件", {
+        filename: file.name,
+        filetype: file.type
+      });
+      return NextResponse.json<errorState>({state: "error", message: "请传入正确的excel文件"}, {status: 500});
+    }
+      
 
     const arrayBuffer = await file.arrayBuffer();
     const workbook = xlsx.read(arrayBuffer, {type: "array", cellDates: true, cellText: true});
     const sheetName = workbook.SheetNames[0];
     const sheet = workbook.Sheets[sheetName];
     const data = xlsx.utils.sheet_to_json<excelDataType>(sheet, {header: ["vendor", "exhibitionDate", "exhibitionId", "productionDate", "maritime", "boxQuantity"], raw: false, range: 1});
+    logger.debug("批量样品清单", {data: data});
 
     const noris = data.map<z.infer<typeof formSchema>>(nori=>(
       formSchema.parse(nori)
     ));
 
     await databaseCreateNori(noris);
+    logger.debug("批量样品提交成功");
     return NextResponse.json<errorState>({state:"success"});
     
   } catch (error) {
-    const prismaError = error as Prisma.PrismaClientKnownRequestError;
-    if(prismaError) {
-      if (prismaError.code === "P2002") {
+    logger.error("批量提交样品清单时报错", error);
+    if(isPrismaClientKnownError(error)) {
+      if (error.code === "P2002") {
         return NextResponse.json<errorState>({state: "error", message: "传入重复的样品信息"}, {status: 500});
       }
     }

@@ -20,6 +20,8 @@ import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { fetchPicture } from "@/services/centerService";
 import { Button } from "@/components/ui/button";
 import { HiOutlineXMark } from "react-icons/hi2";
+import { errorState } from "@/lib/utils";
+import { toast } from "sonner";
 
 export function PictureForm({
   noriId,
@@ -37,6 +39,7 @@ export function PictureForm({
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [state, setState] = useState<errorState>({state: "success"});
 
   useEffect(()=>{
     const fetchData = async ()=>{
@@ -61,6 +64,12 @@ export function PictureForm({
     }
   }, [picture]);
 
+  useEffect(()=>{
+    if(state.state === "error") {
+      toast.error("发生错误", {description: state.message});
+    }
+  }, [state]);
+
   const onSubmit = async (data: z.infer<typeof pictureSchema>) => {
     const formData = new FormData();
     formData.set("nori_id", noriId);
@@ -74,8 +83,10 @@ export function PictureForm({
         "X-File-Type": data.picture.type,
       }
     });
-    } catch {
-
+    } catch (error) {
+      if(axios.isAxiosError(error)) {
+        setState(error.response?.data);
+      }
     }
     finally{
       setLoading(false);

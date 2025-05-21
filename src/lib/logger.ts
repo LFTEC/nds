@@ -6,11 +6,12 @@ const logger = createLogger({
     format.timestamp({
       format: "YYYY-MM-DD HH:mm:ss"
     }),
+    format.colorize(),
     format.errors({stack: true}),
     format.splat(),
     format.json(),
   ),
-  defaultMeta: {service: "test"},
+  defaultMeta: {service: "nds"},
   transports: [
     new transports.Console()
   ]
