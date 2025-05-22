@@ -21,7 +21,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { formSchema } from "@/data/center/centerData";
 import { indicatorSchema } from "@/services/indicatorData";
 import { combo, comboItem } from "generated/prisma";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { z } from "zod";
@@ -29,6 +29,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { debounce } from "lodash";
 import { updateIndicateResult } from "@/services/centerService";
 import { toast } from "sonner";
+import { errorState } from "@/lib/utils";
 
 export function EditIndicatorValue({
   result,
@@ -50,6 +51,8 @@ export function EditIndicatorValue({
 
   const debounceRef = useRef<ReturnType<typeof debounce>>(null);
 
+  const [state, setState] = useState<errorState>({state: "success"});
+
   useEffect(() => {
     debounceRef.current = debounce(form.handleSubmit(onSubmit), 1000);
     return () => {
@@ -63,13 +66,18 @@ export function EditIndicatorValue({
     }
   }, [watchedData]);
 
+  useEffect(()=>{
+    if(state.state === "error") {
+      toast.error("发生错误", {description: state.message});
+    }
+  }, [state]);
+
   //const [state, setState] = useState<errorState>({ state: "success" });
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     const error = await updateIndicateResult(data);
     //setState(error);
-
+    setState(error);
     if (error.state === "error") {
-      toast("更新检验结果时发生异常", { description: error.message });
       form.reset();
     } else {
       form.reset(data);

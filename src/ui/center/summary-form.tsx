@@ -33,8 +33,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { summarySchema } from "@/data/registry/registryData";
 import { z } from "zod";
 import { complete } from "@/services/noriService";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { errorState } from "@/lib/utils";
+import { toast } from "sonner";
 
 export function SummaryForm({
   id,
@@ -55,6 +56,12 @@ export function SummaryForm({
     const state = await complete(id, data);
     setState(state);
   };
+
+  useEffect(()=>{
+    if(state.state === "error") {
+      toast.error("发生异常", {description: state.message});
+    }
+  }, [state]);
 
   return (
     <Form {...form}>

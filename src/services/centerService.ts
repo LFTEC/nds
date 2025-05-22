@@ -22,6 +22,7 @@ import { errorState } from "@/lib/utils";
 import { auth } from "@/auth";
 import { Prisma } from "generated/prisma/client";
 import { redirect } from "next/navigation";
+import logger from "@/lib/logger";
 
 export async function getIndicatingList(
   query: string,
@@ -159,6 +160,8 @@ export async function updateIndicateResult(
   data: z.infer<typeof formSchema>
 ): Promise<errorState> {
   try {
+    logger.debug("检验指标录入结果保存", {data: data});
+
     const result = await prisma.detectResult.findUniqueOrThrow({
       include: {
         indicator: { include: { combo: { include: { items: true } } } },
@@ -270,7 +273,7 @@ export async function updateIndicateResult(
 
     return { state: "success" };
   } catch (error) {
-    console.error(error);
+    logger.error("检验指标录入结果保存失败", {error: error});
     return { state: "error", message: "更新数据时发生异常" };
   }
 }
