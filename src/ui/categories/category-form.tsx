@@ -17,7 +17,9 @@ import { Switch } from "@/components/ui/switch";
 
 import { z } from "zod";
 import { saveCategoryName } from "@/services/categories";
-import { useActionState, useState } from "react";
+import { useEffect, useState } from "react";
+import { errorState } from "@/lib/utils";
+import { toast } from "sonner";
 
 const formSchema = z.object({
   name: z
@@ -45,14 +47,13 @@ export function CategoryForm({
     },
   });
 
-  const saveCategoryNameWithParam = saveCategoryName.bind(null, cate.id);
-  const [state, formAction] = useActionState(saveCategoryNameWithParam, {
-    state: "success",
-  });
+  const [state, setState] = useState<errorState>({state: "success"});
 
-  if(state.state === "error") {
-    //处理错误
-  }
+  useEffect(()=>{
+    if(state.state === "error") {
+      toast.error("发生异常", {description: state.message});
+    }    
+  }, [state]);
 
   const [submitting, setSubmitting] = useState(false);
 
@@ -63,8 +64,11 @@ export function CategoryForm({
       formData.append("name", data.name);
       formData.append("description", data.description);
       formData.append("hasPic", data.hasPic? "true": "false");
-      await saveCategoryName(cate.id, { state: "success" }, formData);
+      const formState = await saveCategoryName(cate.id, { state: "success" }, formData);
+      setState(formState);
       setOpen(false);
+    } catch(error: any) {
+      setState({state: "error", message: error.message})
     } finally {
       setSubmitting(false);
     }
@@ -73,7 +77,6 @@ export function CategoryForm({
   return (
     <Form {...form}>
       <form
-        action={formAction}
         className="space-y-5"
         onSubmit={form.handleSubmit(onSubmit)}
       >

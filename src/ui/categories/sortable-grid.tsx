@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   DndContext,
   closestCenter,
@@ -21,6 +21,7 @@ import { SortableItem } from "./sortable-item";
 import { NewCard } from "./new-card";
 import { sortCategories } from "@/services/categories";
 import { toast } from "sonner";
+import { errorState } from "@/lib/utils";
 
 export function CateSortableGrid({ categories }: { categories: category[] }) {
   const [items, setItems] = useState<z.infer<typeof sortableSchema>[]>(
@@ -33,6 +34,13 @@ export function CateSortableGrid({ categories }: { categories: category[] }) {
     })
   );
 
+  const [state, setState] = useState<errorState>();
+  useEffect(()=>{
+    if(state?.state === "error") {
+      toast.error("更新类别顺序时发生异常", {description: state.message});
+    }
+  }, [state]);
+
   const handleDragEnd = async (e: DragEndEvent) => {
     const {active, over} = e;
     if(over && over.id !== active.id) {
@@ -42,7 +50,8 @@ export function CateSortableGrid({ categories }: { categories: category[] }) {
       setItems(newItems);
 
       try {
-        await sortCategories(newItems);
+        const state = await sortCategories(newItems);
+        setState(state);
       } catch (error: any) {
         setItems(items);
         toast("更新顺序时发生异常，可能的原因：" + error.message);

@@ -6,6 +6,7 @@ import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { sortableSchema } from "@/data/category/categoryData";
+import logger from "@/lib/logger";
 
 export async function allCategories(): Promise<category[]> {
   return await prisma.category.findMany({ orderBy: { serialNo: "asc" } });
@@ -52,6 +53,7 @@ export async function setInvisible({
   invisible: boolean;
 }): Promise<errorState> {
   try {
+    logger.debug("设置类别的可见性", {id: id, invisible: invisible});
     const cate = await prisma.category.findUniqueOrThrow({ where: { id: id } });
     cate.invisible = invisible;
 
@@ -61,13 +63,14 @@ export async function setInvisible({
     });
     return { state: "success" };
   } catch (error) {
-    console.error(error);
+    logger.error("设置类别可见性时发生异常", error);
     return { state: "error", message: `设置类别${id}时发生故障，请稍后再试` };
   }
 }
 
-export async function sortCategories(cates: z.infer<typeof sortableSchema>[] ) {
+export async function sortCategories(cates: z.infer<typeof sortableSchema>[] ): Promise<errorState> {
   try {
+    logger.debug("设置检测类别的顺序", cates);
     await prisma.$transaction(
       async (tx) => {
         for(const [index, item] of cates.entries()) {
@@ -78,9 +81,11 @@ export async function sortCategories(cates: z.infer<typeof sortableSchema>[] ) {
         }
       }
     );
+
+    return {state: "success"};
   } catch(error) {
-    console.error(error);
-    throw new Error("保存检验类别顺序时出错", {cause: error})
+    logger.error("设置检测类别顺序时发生异常", error);
+    return {state: "error", message: "设置检测类别顺序时发生异常"};
   }
   
 }
@@ -91,6 +96,7 @@ export async function saveCategoryName(
   formData: FormData
 ): Promise<errorState> {
   try {
+    logger.debug("设置检测类别信息", {id: id, data: formData});
     await prisma.category.findUniqueOrThrow({ where: { id: id } });
     const { name, description, hasPic } = formSchema.parse({
       name: formData.get("name"),
@@ -111,7 +117,7 @@ export async function saveCategoryName(
     return {state: "success"};
     
   } catch (error) {
-    console.error(error);
+    logger.error("设置检测类别信息时发生异常", error);
     return { state: "error", message: "更新类别信息发生故障，请稍后再试" };
   }
 }
@@ -120,6 +126,7 @@ export async function createCategory(
   prevState: errorState
 ): Promise<errorState> {
   try {
+    logger.debug("创建检测类别信息");
     const maxSerialNo = await prisma.category.aggregate({
       _max: { serialNo: true },
     });
@@ -140,7 +147,7 @@ export async function createCategory(
 
     revalidatePath("/main/categories");
   } catch (error) {
-    console.error(error);
+    logger.error("创建检测类别时发生异常", error);
     return { state: "error", message: "创建检测类别时发生故障，请稍后再试" };
   } finally {
     redirect("/main/categories");

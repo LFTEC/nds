@@ -2,7 +2,7 @@
 
 import { indicatorSchema } from "@/services/indicatorData";
 import { z } from "zod";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -167,6 +167,12 @@ export function CreateIndicator({
       setOpen(false);
     }
   };
+
+  useEffect(()=>{
+    if(open) {
+      form.reset();
+    }
+  }, [open]);
 
   const [state, setState] = useState<errorState>({ state: "success" });
 

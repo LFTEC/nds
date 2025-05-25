@@ -4,6 +4,7 @@ import type { errorState } from "@/lib/utils";
 import { revalidatePath } from "next/cache";
 import { indicatorSchema } from "./indicatorData";
 import {z} from 'zod';
+import logger from "@/lib/logger";
 
 export async function getIndicatorById(id: number): Promise<z.infer<typeof indicatorSchema>> {
   try {
@@ -22,6 +23,7 @@ export async function getIndicatorById(id: number): Promise<z.infer<typeof indic
 
 export async function createIndicator(prevState: errorState, data: z.infer<typeof indicatorSchema>): Promise<errorState> {
   try{
+    logger.debug("创建检测指标", {data: data});
     const parsedData = indicatorSchema.safeParse(data);
     if(parsedData.success) {
       await prisma.indicator.create({
@@ -41,21 +43,21 @@ export async function createIndicator(prevState: errorState, data: z.infer<typeo
         }
       });
     } else {
+      logger.error("创建指标时发生异常，传入的数据无法解析");
       return {state: "error", message: "创建指标时发生异常，传入的数据无法解析"};
-    }
-
-    
+    }    
 
     revalidatePath(`/main/categories/${data.categoryId}/indicators`);
     return {state: "success"};
   } catch(error) {
-    console.error(error);
+    logger.error("创建检测指标时发生异常", error);
     return {state: "error", message: "创建指标时发生异常"};
   }
 }
 
 export async function updateIndicator(id: number, prevState: errorState, data: z.infer<typeof indicatorSchema> ): Promise<errorState> {
   try{
+    logger.debug("编辑检测指标", {id: id, data: data});
     const indData = await prisma.indicator.findUniqueOrThrow({
       where: {
         id: id
@@ -84,7 +86,7 @@ export async function updateIndicator(id: number, prevState: errorState, data: z
     return {state: "success"};
 
   } catch (error){
-    console.error(error);
+    logger.error("编辑检测指标时发生异常", error);
     return {state: "error", message: "更新指标时发生异常"};
   }
 }

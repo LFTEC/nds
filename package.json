@@ -13,6 +13,7 @@
     "@dnd-kit/modifiers": "^9.0.0",
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
+    "@elastic/elasticsearch": "^8.18.2",
     "@hookform/resolvers": "^5.0.1",
     "@prisma/client": "^6.7.0",
     "@radix-ui/react-alert-dialog": "^1.1.11",
@@ -56,6 +57,7 @@
     "tailwind-merge": "^3.2.0",
     "vaul": "^1.1.2",
     "winston": "^3.17.0",
+    "winston-elasticsearch": "^0.19.0",
     "xlsx": "^0.18.5",
     "zod": "^3.24.3"
   },

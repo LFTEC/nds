@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { IoEnterOutline } from "react-icons/io5";
 import { HiPencilAlt } from "react-icons/hi";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { setInvisible as setCategoryInvisible } from "@/services/categories";
 import { toast } from "sonner";
 import {
@@ -34,10 +34,17 @@ import {
 } from "@/components/ui/tooltip";
 
 import { CategoryForm } from "./category-form";
+import { errorState } from "@/lib/utils";
 
 export function CategoryCard({ item }: { item: category }) {
   const [invisible, setInvisible] = useState(item.invisible);
   //const initialState : errorState = {state: 'success'};
+  const [state, setState] = useState<errorState>();
+  useEffect(()=>{
+    if(state?.state === "error") {
+      toast.error("发生异常", {description: state.message});
+    }
+  }, [state]);
 
   //const [state, categoryStatusAction] = useActionState(setCategoryInvisible, initialState);
   const handleInvisibleChange = async (e: boolean) => {
@@ -48,9 +55,7 @@ export function CategoryCard({ item }: { item: category }) {
       invisible: newInvisible,
     });
 
-    if (state.state == "error") {
-      toast("发生异常", { description: `${state.message}` });
-    }
+    setState(state);
   };
 
   const [open, setOpen] = useState(false);
