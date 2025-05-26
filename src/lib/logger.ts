@@ -1,22 +1,23 @@
 import {createLogger, format, transports} from "winston";
 import {ElasticsearchTransport} from "winston-elasticsearch";
-import {Client} from "@elastic/elasticsearch";
 
-const esClient = new Client({
-  node: "https://es.jcdev.cc:30141",
-  auth: {
-    username: "elastic",
-    password: "elastic"
+export const esTransport = new ElasticsearchTransport({
+  clientOpts: {
+    node: process.env.ELASTICSEARCH_URL || "https://localhost:9200",
+    auth: {
+      username: process.env.ELASTICSEARCH_USERNAME || "nes",
+      password: process.env.ELASTICSEARCH_PASSWORD || "nes"
+    }
   },
-});
-
-const esTransport = new ElasticsearchTransport({
-  client: esClient,
   indexPrefix: "nes-logs",
   indexSuffixPattern: "YYYY-MM",
   bufferLimit: 1000,
   flushInterval: 5000,
-  retryLimit: 3
+  retryLimit: 3,
+});
+
+esTransport.on("error", (error: Error)=>{
+  console.error("Elasticsearch transport error:", error);
 });
 
 const globalForLogger = global as unknown as {
@@ -29,14 +30,18 @@ const logger = globalForLogger.logger || createLogger({
     format.timestamp({
       format: "YYYY-MM-DD HH:mm:ss"
     }),
-    format.colorize(),
     format.errors({stack: true}),
     format.splat(),
     format.json(),
   ),
-  defaultMeta: {service: "nes"},
+  defaultMeta: {service: "nes", nodeVersion: process.version},
   transports: [
-    new transports.Console(),
+    new transports.Console({
+      format: format.combine(
+        format.colorize(),
+        format.simple()
+      )
+    }),
     esTransport
   ]
 });
