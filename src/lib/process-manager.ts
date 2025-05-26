@@ -9,7 +9,6 @@ class ProcessManager {
 
   public initialize(): void {
     if(this.initialized) return;
-    console.log(process.env.NEXT_RUNTIME);
     console.log('Initializing process manager...');
 
     const gracefulShutdown = async (signal: string): Promise<void> =>{

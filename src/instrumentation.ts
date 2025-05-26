@@ -1,5 +1,7 @@
 import processManager from "./lib/process-manager";
 
 export function register() {
-  processManager.initialize();
+  if(process.env.NEXT_RUNTIME === "nodejs") {
+    processManager.initialize();
+  }  
 }
