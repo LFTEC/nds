@@ -9,7 +9,7 @@ class ProcessManager {
 
   public initialize(): void {
     if(this.initialized) return;
-
+    console.log(process.env.NEXT_RUNTIME);
     console.log('Initializing process manager...');
 
     const gracefulShutdown = async (signal: string): Promise<void> =>{
@@ -29,19 +29,6 @@ class ProcessManager {
     process.on("SIGINT", async ()=> { await gracefulShutdown("SIGINT"); });
     process.on("SIGUSR2", async ()=> { await gracefulShutdown("SIGUSR2"); });
     process.on("SIGTERM", async ()=> { await gracefulShutdown("SIGTERM"); });
-
-    process.on('uncaughtException', async (error)=>{
-      logger.error('Uncaught Exception:', error);
-      await esTransport.flush();
-
-    });
-
-    process.on('unhandledRejection', async (reason) => {
-      logger.error('Unhandled rejection', { 
-        reason: String(reason) 
-      });
-      await gracefulShutdown('unhandledRejection');
-    });
 
     this.initialized = true;
     console.log("Process manager initialized.");
