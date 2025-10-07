@@ -32,7 +32,7 @@ const LabelContent = React.forwardRef<HTMLDivElement, LabelPrintProps>(
     }, [batchNo]);
 
     return (
-      <div ref={ref} className="p-2 bg-white" style={{ width: "50mm", height: "40mm" }}>
+      <div ref={ref} className="p-2 bg-white" style={{ width: "40mm", height: "50mm" }}>
         <div className="border border-gray-300 p-1 h-full flex flex-col text-xs">
           {/* 检验样品 - 条形码和批次号 */}
           <div className="text-center mb-3">
@@ -70,7 +70,7 @@ export function LabelPrint({ batchNo, vendor, productionDate, onPrint }: LabelPr
     documentTitle: `紫菜检验标签-${batchNo}`,
     pageStyle: `
       @page {
-        size: 50mm 40mm;
+        size: 40mm 50mm;
         margin: 0;
       }
       @media print {
