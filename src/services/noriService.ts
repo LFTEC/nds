@@ -146,13 +146,24 @@ export const databaseCreateNori = async (
     createDate: new Date(),
   }));
 
-  await prisma.nori.createMany({
+  const result = await prisma.nori.createMany({
     data: createData,
   });
+
+  // 返回第一个创建的记录（对于单个记录创建）
+  if (createData.length === 1) {
+    const createdNori = await prisma.nori.findFirst({
+      where: { batchNo: createData[0].batchNo },
+      orderBy: { createDate: 'desc' }
+    });
+    return createdNori;
+  }
+
+  return result;
 };
 
 export const databaseUpdateNori = async(noriId: string, data: z.infer<typeof formSchema>) =>{
-  await prisma.nori.update({
+  return await prisma.nori.update({
     where: {id: noriId},
     data: {
       vendor: data.vendor,
@@ -171,19 +182,20 @@ export async function updateNori(
   id: string | undefined,
   privState: errorState,
   data: z.infer<typeof formSchema>
-): Promise<errorState> {
+): Promise<errorState & { data?: any }> {
 
   try {
     logger.debug("进行紫菜样品的创建或更新工作", {data: data, id: id});
 
+    let result;
     if (id) {
-      await databaseUpdateNori(id, data);
+      result = await databaseUpdateNori(id, data);
     } else {
-      await databaseCreateNori([data]);
+      result = await databaseCreateNori([data]);
     }
 
     revalidatePath("/main/registry");
-    return { state: "success" };
+    return { state: "success", data: result };
   } catch (error) {
     logger.error("进行紫菜样品的创建或更新工作时出错", {error});
 

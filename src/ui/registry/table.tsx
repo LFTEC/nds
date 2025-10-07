@@ -22,6 +22,8 @@ import { HiOutlineTrash } from "react-icons/hi2";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import DeleteNori from "./buttons";
+import { LabelPrint } from "./label-print";
+
 
 export async function RegistryTable({ query, currentPage }: { query: string; currentPage: number }) {
   const noriList = await getNoriListByFilter(query,currentPage);
@@ -80,6 +82,10 @@ export async function RegistryTable({ query, currentPage }: { query: string; cur
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>
+                <LabelPrint
+                  batchNo={nori.batchNo}
+                  vendor={nori.vendor}
+                  productionDate={nori.productionDate ?? new Date('2025-01-01')} />
               </div>
             </TableCell>
           </TableRow>

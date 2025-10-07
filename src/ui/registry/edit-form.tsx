@@ -38,6 +38,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { updateNori } from "@/services/noriService";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { LabelPrint } from "./label-print";
 
 export function EditNori({
   noriData,
@@ -71,10 +72,24 @@ export function EditNori({
   const [open, setOpen] = useState(false);
   const [isEOpen, setIsEOpen] = useState(false);
   const [isPOpen, setIsPOpen] = useState(false);
+  const [savedData, setSavedData] = useState<any>(null);
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     const result = await updateNori(noriData?.id, { state: "success" }, data);
     setState(result);
+    if (result.state === "success" && result.data) {
+      setSavedData(result.data);
+    }
+    setOpen(result.state === "error");
+  };
+
+  const onSubmitAndPrint = async (data: z.infer<typeof formSchema>) => {
+    const result = await updateNori(noriData?.id, { state: "success" }, data);
+    setState(result);
+    if (result.state === "success" && result.data) {
+      setSavedData(result.data);
+      // 打印逻辑将在组件中处理
+    }
     setOpen(result.state === "error");
   };
 
@@ -250,9 +265,32 @@ export function EditNori({
                 </FormItem>
               )}
             />
-            <DialogFooter>
+            <DialogFooter className="gap-2">
               <Button type="submit" disabled={form.formState.isSubmitting} className="min-w-24">
-                {form.formState.isSubmitting ? <AiOutlineLoading3Quarters className="animate-spin"/>: "保存"}</Button>
+                {form.formState.isSubmitting ? <AiOutlineLoading3Quarters className="animate-spin"/>: "保存"}
+              </Button>
+              <Button
+                type="button"
+                disabled={form.formState.isSubmitting}
+                onClick={form.handleSubmit(onSubmitAndPrint)}
+                className="min-w-24"
+                variant="outline"
+              >
+                {form.formState.isSubmitting ? <AiOutlineLoading3Quarters className="animate-spin"/>: "保存并打印"}
+              </Button>
+              {savedData && state.state === "success" && (
+                <LabelPrint
+                  batchNo={savedData.batchNo}
+                  vendor={savedData.vendor}
+                  exhibitionDate={savedData.exhibitionDate}
+                  exhibitionId={savedData.exhibitionId}
+                  onPrint={() => {
+                    setOpen(false);
+                    setSavedData(null);
+                    form.reset();
+                  }}
+                />
+              )}
             </DialogFooter>
           </form>
         </Form>
