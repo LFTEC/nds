@@ -7,11 +7,11 @@ import {z} from "zod";
 import logger from "@/lib/logger";
 import { isPrismaClientKnownError } from "@/lib/prisma";
 
-export const config = {
-  api: {
-    bodyParser: false
-  }
-}
+// export const config = {
+//   api: {
+//     bodyParser: false
+//   }
+// }
 
 export interface excelDataType {
   vendor: string,

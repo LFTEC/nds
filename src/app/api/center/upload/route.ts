@@ -3,11 +3,11 @@ import { updatePicture } from "@/services/centerService";
 import { errorState } from "@/lib/utils";
 import logger from "@/lib/logger";
 
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
+// export const config = {
+//   api: {
+//     bodyParser: false,
+//   },
+// };
 
 export async function POST(request: Request) {
   try {

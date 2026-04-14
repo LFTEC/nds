@@ -282,8 +282,8 @@ export function EditNori({
                 <LabelPrint
                   batchNo={savedData.batchNo}
                   vendor={savedData.vendor}
-                  exhibitionDate={savedData.exhibitionDate}
-                  exhibitionId={savedData.exhibitionId}
+                  productionDate={savedData.exhibitionDate}
+                  //exhibitionId={savedData.exhibitionId}
                   onPrint={() => {
                     setOpen(false);
                     setSavedData(null);
