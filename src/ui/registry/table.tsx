@@ -6,27 +6,15 @@ import {
   TableBody,
   TableCell,
 } from "@/components/ui/table";
-import {
-  AlertDialog,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 import { getNoriListByFilter } from "@/services/noriService";
 import { EditNori } from "./edit-form";
-import { HiOutlineTrash } from "react-icons/hi2";
-import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import DeleteNori from "./buttons";
 import { LabelPrint } from "./label-print";
 
 
 export async function RegistryTable({ query, currentPage }: { query: string; currentPage: number }) {
-  const noriList = await getNoriListByFilter(query,currentPage);
+  const noriList = await getNoriListByFilter(query, currentPage);
 
   return (
     <Table>
@@ -49,11 +37,11 @@ export async function RegistryTable({ query, currentPage }: { query: string; cur
             <TableCell>{nori.batchNo}</TableCell>
             <TableCell>{nori.vendor}</TableCell>
             <TableCell>
-              {format(nori.exhibitionDate,"yyyy-MM-dd")}
+              {format(nori.exhibitionDate, "yyyy-MM-dd")}
             </TableCell>
             <TableCell>{nori.exhibitionId}</TableCell>
             <TableCell>
-              {format(nori.productionDate?? "", "yyyy-MM-dd")}
+              {format(nori.productionDate ?? "", "yyyy-MM-dd")}
             </TableCell>
             <TableCell>{nori.maritime}</TableCell>
             <TableCell>{nori.boxQuantity}</TableCell>
@@ -61,27 +49,7 @@ export async function RegistryTable({ query, currentPage }: { query: string; cur
             <TableCell>
               <div className="flex items-center gap-2">
                 <EditNori noriData={nori} behavior="edit" />
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      className="flex gap-2 items-center border py-1 px-2 rounded-md hover:bg-blue-200 transition-colors"
-                    >
-                      <HiOutlineTrash className="size-4" />
-                      <span>删除</span>
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>请确认</AlertDialogTitle>
-                      <AlertDialogDescription>{`确定要删除紫菜批次${nori.batchNo}吗？`}</AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>取消</AlertDialogCancel>
-                      <DeleteNori id={nori.id} />
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
+                <DeleteNori id={nori.id} batchNo={nori.batchNo} />
                 <LabelPrint
                   batchNo={nori.batchNo}
                   vendor={nori.vendor}
