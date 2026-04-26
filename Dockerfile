@@ -29,7 +29,7 @@ USER nds
 EXPOSE 9000
 ENV PORT=9000
 ENV HOSTNAME="0.0.0.0"
-ENTRYPOINT [ "sh", "-c", "npx prisma migrate deploy && node server.js" ]
+ENTRYPOINT [ "node", "server.js" ]
 
 
 
