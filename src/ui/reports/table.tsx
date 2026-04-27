@@ -6,6 +6,8 @@ import {
   TableBody,
   TableCell,
 } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { HiOutlineDocumentText } from "react-icons/hi2";
 import { getReports } from "@/services/noriService";
 import { format } from "date-fns";
 
@@ -46,7 +48,16 @@ export async function ReportsTable({ query, currentPage }: { query: string; curr
             <TableCell>{format(nori.finishDate??"", "yyyy-MM-dd")}</TableCell>
             <TableCell>
               <div className="flex items-center gap-2">
-                
+                <Button
+                      asChild
+                      variant="ghost"
+                      className="flex gap-2 items-center border py-1 px-2 rounded-md hover:bg-blue-200 transition-colors"
+                    >
+                      <a href={`/api/report/${nori.batchNo}/pdf`} target="_blank" rel="noopener noreferrer">
+                        <HiOutlineDocumentText className="size-4" />
+                        <span>报告单</span>
+                      </a>
+                    </Button>
               </div>
             </TableCell>
           </TableRow>

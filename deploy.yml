@@ -1,0 +1,166 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: nori-detection
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nds-webui
+  namespace: nori-detection
+spec:
+  selector:
+    matchLabels:
+      app: nds-webui
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: nds-webui
+    spec:
+      containers:
+      - name: nds-webui
+        image: jcpuff20/nds-webui:0.0.1-alpha.2
+        resources:
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 9000
+          name: http
+        env: 
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: nds-secret
+              key: APP_DATABASE_URL
+        - name: AUTH_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: nds-secret
+              key: APP_AUTH_SECRET
+        - name: ELASTICSEARCH_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: nds-secret
+              key: APP_ELASTICSEARCH_USERNAME
+        - name: ELASTICSEARCH_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: nds-secret
+              key: APP_ELASTICSEARCH_PASSWORD
+        - name: ELASTICSEARCH_URL
+          value: "http://es-logs-es-http.es.svc.cluster.local:9200"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nds-report
+  namespace: nori-detection
+spec:
+  selector:
+    matchLabels:
+      app: nds-report
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: nds-report
+    spec:
+      containers:
+      - name: nds-report
+        image: jcpuff20/nds-report:0.0.1-alpha.2
+        resources:
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 8080
+          name: report
+        env: 
+        - name: ASPNETCORE_ENVIRONMENT
+          value: "Production"
+        - name: CONNECTIONSTRINGS__DEFAULTCONNECTION
+          valueFrom:
+            secretKeyRef:
+              name: nds-secret
+              key: REPORT_CONNECTIONSTRING
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nds-webui-service
+  namespace: nori-detection
+spec:
+  selector:
+    app: nds-webui
+  ports:
+  - port: 9000
+    targetPort: http
+    name: http
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nds-report-service
+  namespace: nori-detection
+spec:
+  selector:
+    app: nds-report
+  ports:
+  - port: 8080
+    targetPort: report
+    name: report
+  type: ClusterIP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nds-db
+  namespace: nori-detection
+spec:
+  type: ExternalName
+  externalName: node.lefusoft.cn
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nds-webui-ingress
+  namespace: nori-detection
+  labels:
+    name: nds-website-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: nds.lefusoft.cn
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: nds-webui-service
+            port:
+              number: 9000
+  tls:
+  - hosts:
+    - nds.lefusoft.cn
+    secretName: nds.lefusoft.cn
+
+
+
+
+
