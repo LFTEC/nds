@@ -11,6 +11,14 @@ export function SearchInput(props: React.ComponentProps<"input">) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
+  const inputRef = useRef<HTMLInputElement>(null);
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      //e.preventDefault();
+      inputRef.current?.select();
+    } 
+  }
+
   const debounceSubmit = useRef<ReturnType<typeof debounce>>(null);
   useEffect(() => {
     debounceSubmit.current = debounce((term: string)=>{
@@ -36,7 +44,9 @@ export function SearchInput(props: React.ComponentProps<"input">) {
       <Label htmlFor="search" className="sr-only">查询条件</Label>
       <input
         className={cn("block peer w-full rounded-md border border-gray-200 pl-10 py-2 text-sm outline-2 placeholder:text-gray-500", props.className)}
-        onChange={(e)=>{debounceSubmit.current?.(e.target.value)}}        
+        onChange={(e)=>{debounceSubmit.current?.(e.target.value)}}     
+        ref={inputRef}
+        onKeyDown={handleKeyDown}   
         defaultValue={searchParams.get('query')?.toString()}
         {...props}
       />

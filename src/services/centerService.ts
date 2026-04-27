@@ -100,6 +100,8 @@ export const startIndicate = async (noriId: string) => {
     where: { id: noriId, NOT: { startDate: null } },
   });
 
+  const session  = await auth();
+
   if (start._count == 0) {
     const categories = await allCategoriesWithIndicator();
 
@@ -131,7 +133,10 @@ export const startIndicate = async (noriId: string) => {
           data: validIndicators.map((indicator) => ({
             noriId: noriId,
             indicatorId: indicator.id,
-            result: "N",
+            result: indicator.type === "B" ? "Y" : "N",
+            boolData: indicator.type === "B" ? false : null,
+            inspectorId: indicator.type === "B" ? session?.user?.id || null : null,
+            inspectDate: indicator.type === "B" ? new Date(format(new Date(), "yyyy-MM-dd")) : null,
             suggestionText: indicator.hasSuggestionText
               ? indicator.suggestionText
               : null,
