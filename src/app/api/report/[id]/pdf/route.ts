@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const {id} = await params;
-  const requestUrl = `http://localhost:8080/report?batchNo=${id}`;
+  const requestUrl = `http://nds-report-service:8080/report?batchNo=${id}`;
   const range = request.headers.get("range");
 
   try {
