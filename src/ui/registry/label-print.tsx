@@ -12,6 +12,7 @@ interface LabelPrintProps {
   vendor: string;
   productionDate: Date;
   onPrint?: () => void;
+  autoPrint?: boolean;
 }
 
 const LabelContent = React.forwardRef<HTMLDivElement, LabelPrintProps>(
@@ -62,7 +63,7 @@ const LabelContent = React.forwardRef<HTMLDivElement, LabelPrintProps>(
 
 LabelContent.displayName = "LabelContent";
 
-export function LabelPrint({ batchNo, vendor, productionDate, onPrint }: LabelPrintProps) {
+export function LabelPrint({ batchNo, vendor, productionDate, onPrint, autoPrint }: LabelPrintProps) {
   const labelRef = useRef<HTMLDivElement>(null);
 
   const handlePrint = useReactToPrint({
@@ -82,6 +83,14 @@ export function LabelPrint({ batchNo, vendor, productionDate, onPrint }: LabelPr
     `,
     onAfterPrint: onPrint,
   });
+
+  const hasPrinted = useRef(false);
+  useEffect(() => {
+    if (autoPrint && batchNo && !hasPrinted.current) {
+      hasPrinted.current = true;
+      handlePrint();
+    }
+  }, [batchNo, autoPrint]);
 
   return (
     <>

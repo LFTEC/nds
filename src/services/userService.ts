@@ -68,6 +68,47 @@ export async function updateUser(
   redirect("/main/signup");
 }
 
+export async function updateUserProfile(
+  id: string,
+  data: {
+    name: string;
+    email: string;
+  }
+) {
+  await prisma.user.update({
+    data: data,
+    where: { id: id },
+  });
+  revalidatePath("/main");
+}
+
+export async function changePassword(
+  id: string,
+  data: {
+    oldPassword: string;
+    newPassword: string;
+  }
+) {
+  const user = await prisma.user.findUnique({
+    where: { id: id },
+  });
+
+  if (!user) {
+    throw new Error("用户不存在");
+  }
+
+  const match = await bcrypt.compare(data.oldPassword, user.password);
+  if (!match) {
+    throw new Error("原密码不正确");
+  }
+
+  const hashed = await bcrypt.hash(data.newPassword, 10);
+  await prisma.user.update({
+    data: { password: hashed },
+    where: { id: id },
+  });
+}
+
 export async function getUserList(query: string, currentPage: number) {
   const users = prisma.user.findMany({
     select: {

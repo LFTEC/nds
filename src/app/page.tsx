@@ -17,7 +17,7 @@ export default function Home() {
           </div>
           <div className="col-start-10 col-end-12 font-medium flex justify-end items-center">
             <button className="font-bold tracking-wide py-2 px-5 sm:px-8 border border-blue-500 text-blue-500 bg-white outline-none rounded-l-full rounded-r-full capitalize hover:bg-blue-500 hover:text-white transition-all hover:shadow-orange ">
-              Sign In
+              <a href="/login">Sign In</a>
             </button>
           </div>
         </nav>
