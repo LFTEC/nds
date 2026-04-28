@@ -25,7 +25,7 @@ export default function LoginPage() {
         </div>
       </div>
       <div className="bg-muted relative hidden lg:block">
-        <Image src="/assets/sample2.webp"
+        <Image src="/assets/sample2.png"
           width={800}
           height={900}
           className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
