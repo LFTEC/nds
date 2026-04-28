@@ -44,9 +44,11 @@ export function EditNori({
   noriData,
   behavior,
   className,
+  children,
 }: React.ComponentProps<"button"> & {
   noriData?: noriData;
   behavior: "create" | "edit";
+  children?: React.ReactNode;
 }) {
   let parsedData: z.infer<typeof formSchema>;
   if (behavior === "create") {
@@ -73,6 +75,7 @@ export function EditNori({
   const [isEOpen, setIsEOpen] = useState(false);
   const [isPOpen, setIsPOpen] = useState(false);
   const [savedData, setSavedData] = useState<any>(null);
+  const [isPrintMode, setIsPrintMode] = useState(false);
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     const result = await updateNori(noriData?.id, { state: "success" }, data);
@@ -88,7 +91,7 @@ export function EditNori({
     setState(result);
     if (result.state === "success" && result.data) {
       setSavedData(result.data);
-      // 打印逻辑将在组件中处理
+      setIsPrintMode(true);
     }
     setOpen(result.state === "error");
   };
@@ -99,11 +102,14 @@ export function EditNori({
       onOpenChange={(e) => {
         setOpen(e);
         setState({ state: "success" });
+        setIsPrintMode(false);
         if(e) form.reset();
       }}
     >
       <DialogTrigger asChild>
-        {behavior === "create" ? (
+        {children ? (
+          <Button className={cn(className)}>{children}</Button>
+        ) : behavior === "create" ? (
           <Button className={cn("font-semibold", className)}>
             创建待检记录
           </Button>
@@ -283,10 +289,11 @@ export function EditNori({
                   batchNo={savedData.batchNo}
                   vendor={savedData.vendor}
                   productionDate={savedData.exhibitionDate}
-                  //exhibitionId={savedData.exhibitionId}
+                  autoPrint={isPrintMode}
                   onPrint={() => {
                     setOpen(false);
                     setSavedData(null);
+                    setIsPrintMode(false);
                     form.reset();
                   }}
                 />

@@ -9,7 +9,10 @@ declare module "next-auth" {
 
   interface session {
     user: {
+      id: string
       username: string
+      name?: string | null
+      email?: string | null
     }
   }
 }
@@ -37,12 +40,16 @@ export const authConfig = {
           session.user.id = token.sub || user.id;
           session.userId = token.sub || user.id;
           session.user.username = String(token.username);
+          session.user.name = String(token.name || "");
+          session.user.email = String(token.email || "");
           return session;
         },
         jwt: ({token, user}) => {
           
           if(user) {
             token.username = user.username;
+            token.name = user.name;
+            token.email = user.email;
           }
 
           return token;
