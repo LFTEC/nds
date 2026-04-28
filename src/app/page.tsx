@@ -30,8 +30,8 @@ export default function Home() {
               紫菜营养评价系统
             </h1>
             <p className="text-gray-700 mt-4 mb-6">
-              Provide a network for all your needs with ease and fun using
-              LaslesVPN discover interesting features from us.
+              覆盖紫菜营养成分检测，品质鉴定与数据管理服务，
+              支撑紫菜产业标准化与高值化发展。
             </p>
             <Button type="button" asChild 
               className="tracking-normal mt-6 py-6 lg:py-4 h-12 px-12 lg:px-16 text-white font-semibold rounded-lg text-base hover: shadow-blue-300 hover:shadow-xl transition-all outline-none cursor-pointer">
